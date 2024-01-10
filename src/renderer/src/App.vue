@@ -1,10 +1,15 @@
 <script setup>
 import Header from '@renderer/components/header/Header.vue'
-// import Terminal from '@renderer/components/cmd/Cmd.vue'
-
-import { onMounted, onBeforeUnmount } from 'vue'
+import Status from '@renderer/components/header/Status.vue'
+import Cmd from '@renderer/components/cmd/Cmd.vue'
+import { onMounted, onBeforeUnmount, ref, computed, watch, watchEffect } from 'vue'
 import Terminal from 'primevue/terminal'
 import TerminalService from 'primevue/terminalservice'
+import InputSwitch from 'primevue/inputswitch'
+import TabView from 'primevue/tabview'
+import TabPanel from 'primevue/tabpanel'
+import Button from 'primevue/button'
+import ScrollPanel from 'primevue/scrollpanel'
 
 onMounted(() => {
   TerminalService.on('command', commandHandler)
@@ -18,49 +23,91 @@ const commandHandler = (text) => {
   let response
   let argsIndex = text.indexOf(' ')
   let command = argsIndex !== -1 ? text.substring(0, argsIndex) : text
+  response = '🚀 $ ' + text
+  // switch (command) {
+  //   case 'date':
+  //     response = 'Today is ' + new Date().toDateString()
+  //     break
 
-  switch (command) {
-    case 'date':
-      response = 'Today is ' + new Date().toDateString()
-      break
+  //   case 'greet':
+  //     response = 'Hola ' + text.substring(argsIndex + 1)
+  //     break
 
-    case 'greet':
-      response = 'Hola ' + text.substring(argsIndex + 1)
-      break
+  //   case 'random':
+  //     response = Math.floor(Math.random() * 100)
+  //     break
 
-    case 'random':
-      response = Math.floor(Math.random() * 100)
-      break
-
-    default:
-      response = 'Unknown command: ' + command
-  }
+  //   default:
+  //     response = '🚀 $ ' + command
+  // }
 
   TerminalService.emit('response', response)
+}
+
+const started = ref(false)
+const startWatch = async () => {
+  started.value = true
+  TerminalService.emit('response', 'sample')
+}
+
+const stopWatch = async () => {
+  started.value = false
 }
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
-      <div class="flex justify-content-between flex-wrap">
+      <Status :started="started" />
+    </div>
+    <div class="col-12">
+      <div class="flex justify-content-center">
         <div>
           <Header />
         </div>
-        <div
-          class="flex align-items-center justify-content-center w-4rem h-4rem bg-primary font-bold border-round m-2"
-        >
-          2
-        </div>
-        <div
-          class="flex align-items-center justify-content-center w-4rem h-4rem bg-primary font-bold border-round m-2"
-        >
-          3
-        </div>
+      </div>
+      <div class="flex justify-content-center">
+        <span class="text-5xl font-semibold mt-3">RIS File Watcher</span>
       </div>
     </div>
     <div class="col-12">
-      <div>
+      <div class="flex justify-content-center mb-3 gap-2">
+        <Button label="Start" icon="pi pi-play" @click="startWatch()" v-if="!started" />
+        <Button
+          class=""
+          label="Stop"
+          icon="pi pi-stop"
+          severity="danger"
+          @click="stopWatch()"
+          v-else
+        />
+      </div>
+      <div class="flex align-items-center justify-content-center px-5">
+        <ScrollPanel
+          class="bg-gray-900 text-white border-round p-2 px-3 text-gray-400"
+          style="width: 100%; height: 180px"
+          :pt="{
+            bary: 'hover:bg-primary-400 bg-primary-300 opacity-100'
+          }"
+        >
+          <p>
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+            <span>sads</span> <br />
+          </p>
+        </ScrollPanel>
+      </div>
+      <!-- <div>
         <Terminal
           welcomeMessage="Welcome to RIS File Watcher"
           prompt="🚀 $"
@@ -72,6 +119,13 @@ const commandHandler = (text) => {
             response: 'text-primary-300'
           }"
         />
+      </div> -->
+    </div>
+    <div class="col-12">
+      <div class="flex justify-content-end">
+        <span class="text-xs"
+          >RIS File Watcher v.1.0 @build Electron v28.1.2 @Joenell Alonzo (Software Engineer)</span
+        >
       </div>
     </div>
   </div>
