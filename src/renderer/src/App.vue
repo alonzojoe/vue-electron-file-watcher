@@ -1,97 +1,80 @@
 <script setup>
-import Versions from './components/Versions.vue'
+import Header from '@renderer/components/header/Header.vue'
+// import Terminal from '@renderer/components/cmd/Cmd.vue'
+
+import { onMounted, onBeforeUnmount } from 'vue'
+import Terminal from 'primevue/terminal'
+import TerminalService from 'primevue/terminalservice'
+
+onMounted(() => {
+  TerminalService.on('command', commandHandler)
+})
+
+onBeforeUnmount(() => {
+  TerminalService.off('command', commandHandler)
+})
+
+const commandHandler = (text) => {
+  let response
+  let argsIndex = text.indexOf(' ')
+  let command = argsIndex !== -1 ? text.substring(0, argsIndex) : text
+
+  switch (command) {
+    case 'date':
+      response = 'Today is ' + new Date().toDateString()
+      break
+
+    case 'greet':
+      response = 'Hola ' + text.substring(argsIndex + 1)
+      break
+
+    case 'random':
+      response = Math.floor(Math.random() * 100)
+      break
+
+    default:
+      response = 'Unknown command: ' + command
+  }
+
+  TerminalService.emit('response', response)
+}
 </script>
 
 <template>
-  <Versions></Versions>
-
-  <svg class="hero-logo" viewBox="0 0 900 300">
-    <use xlink:href="./assets/icons.svg#electron" />
-  </svg>
-  <h2 class="hero-text">You've successfully created an Electron project with Vue</h2>
-  <p class="hero-tagline">Please try pressing <code>F12</code> to open the devTool</p>
-
-  <div class="links">
-    <div class="link-item">
-      <a target="_blank" href="https://electron-vite.org">Documentation</a>
+  <div class="grid">
+    <div class="col-12">
+      <div class="flex justify-content-between flex-wrap">
+        <div>
+          <Header />
+        </div>
+        <div
+          class="flex align-items-center justify-content-center w-4rem h-4rem bg-primary font-bold border-round m-2"
+        >
+          2
+        </div>
+        <div
+          class="flex align-items-center justify-content-center w-4rem h-4rem bg-primary font-bold border-round m-2"
+        >
+          3
+        </div>
+      </div>
     </div>
-    <div class="link-item link-dot">•</div>
-    <div class="link-item">
-      <a target="_blank" href="https://github.com/alex8088/electron-vite">Getting Help</a>
-    </div>
-    <div class="link-item link-dot">•</div>
-    <div class="link-item">
-      <a
-        target="_blank"
-        href="https://github.com/alex8088/quick-start/tree/master/packages/create-electron"
-      >
-        create-electron
-      </a>
-    </div>
-  </div>
-
-  <div class="features">
-    <div class="feature-item">
-      <article>
-        <h2 class="title">Configuring</h2>
-        <p class="detail">
-          Config with <span>electron.vite.config.js</span> and refer to the
-          <a target="_blank" href="https://electron-vite.org/config">config guide</a>.
-        </p>
-      </article>
-    </div>
-    <div class="feature-item">
-      <article>
-        <h2 class="title">HMR</h2>
-        <p class="detail">
-          Edit <span>src/renderer</span> files to test HMR. See
-          <a target="_blank" href="https://electron-vite.org/guide/hmr.html">docs</a>.
-        </p>
-      </article>
-    </div>
-    <div class="feature-item">
-      <article>
-        <h2 class="title">Hot Reloading</h2>
-        <p class="detail">
-          Run <span>'electron-vite dev --watch'</span> to enable. See
-          <a target="_blank" href="https://electron-vite.org/guide/hot-reloading.html">docs</a>.
-        </p>
-      </article>
-    </div>
-    <div class="feature-item">
-      <article>
-        <h2 class="title">Debugging</h2>
-        <p class="detail">
-          Check out <span>.vscode/launch.json</span>. See
-          <a target="_blank" href="https://electron-vite.org/guide/debugging.html">docs</a>.
-        </p>
-      </article>
-    </div>
-    <div class="feature-item">
-      <article>
-        <h2 class="title">Source Code Protection</h2>
-        <p class="detail">
-          Supported via built-in plugin <span>bytecodePlugin</span>. See
-          <a target="_blank" href="https://electron-vite.org/guide/source-code-protection.html">
-            docs
-          </a>
-          .
-        </p>
-      </article>
-    </div>
-    <div class="feature-item">
-      <article>
-        <h2 class="title">Packaging</h2>
-        <p class="detail">
-          Use
-          <a target="_blank" href="https://www.electron.build">electron-builder</a>
-          and pre-configured to pack your app.
-        </p>
-      </article>
+    <div class="col-12">
+      <div>
+        <Terminal
+          welcomeMessage="Welcome to RIS File Watcher"
+          prompt="🚀 $"
+          aria-label="PrimeVue Terminal Service"
+          :pt="{
+            root: 'bg-gray-900 text-white border-round',
+            prompt: 'text-gray-400 mr-2',
+            command: 'text-primary-300',
+            response: 'text-primary-300'
+          }"
+        />
+      </div>
     </div>
   </div>
 </template>
 
-<style lang="less">
-@import './assets/css/styles.less';
-</style>
+<style></style>
