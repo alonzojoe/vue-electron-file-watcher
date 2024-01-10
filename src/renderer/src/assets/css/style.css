@@ -1,3 +1,31 @@
 .pe-none {
   pointer-events: none !important;
 }
+
+.fc-green {
+  color: #10b981 !important;
+}
+
+.fc-gray {
+  color: #64748b !important;
+}
+
+.fc-info {
+  color: #0ea5e9 !important;
+}
+
+.fc-orange {
+  color: #f97316 !important;
+}
+
+.fc-violet {
+  color: #a855f7 !important;
+}
+
+.fc-red {
+  color: #ef4444 !important;
+}
+
+.fc-yellow {
+  color: #ffc107 !important;
+}

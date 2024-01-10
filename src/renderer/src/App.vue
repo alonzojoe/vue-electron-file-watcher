@@ -91,24 +91,51 @@ const stopWatch = async () => {
           }"
         >
           <p>
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
-            <span>sads</span> <br />
+            <span>Welcome to RIS File Watcher</span> <br />
+            <span>File Watcher Started...</span> <br />
+            <span class="fc-green"
+              >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
+            >
+            <br />
+            <span class="fc-red"
+              >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File
+              Name Format.</span
+            >
+            <br />
+            <span class="fc-red"
+              >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File
+              Name Format.</span
+            >
+            <br />
+            <span class="fc-red"
+              >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File
+              Name Format.</span
+            >
+            <br />
+            <span class="fc-red"
+              >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File
+              Name Format.</span
+            >
+            <br />
+            <span class="fc-green"
+              >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
+            >
+            <br />
+            <span class="fc-green"
+              >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
+            >
+            <br />
+            <span class="fc-green"
+              >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
+            >
+            <br />
+            <span class="fc-yellow">🚀 $ Attemting to Re-scan the Orders folder</span> <br />
+            <span class="fc-red">🚀 $ File Watcher Stopped...</span> <br />
           </p>
         </ScrollPanel>
       </div>
-      <!-- <div>
-        <Terminal
+      <div>
+        <!-- <Terminal
           welcomeMessage="Welcome to RIS File Watcher"
           prompt="🚀 $"
           aria-label="PrimeVue Terminal Service"
@@ -118,8 +145,8 @@ const stopWatch = async () => {
             command: 'text-primary-300',
             response: 'text-primary-300'
           }"
-        />
-      </div> -->
+        /> -->
+      </div>
     </div>
     <div class="col-12">
       <div class="flex justify-content-end">
