@@ -106,6 +106,27 @@ function startFileWatcher() {
         if (err) throw err
         console.log(`Moved ${fileName} to ${destinationPath}`)
       })
+      // Retry moving the file with a delay (e.g., 500ms)
+      const maxRetries = 3
+      let retries = 0
+
+      const tryMoveFile = () => {
+        fs.rename(filePath, destinationPath, (err) => {
+          if (err) {
+            if (err.code === 'EBUSY' && retries < maxRetries) {
+              console.log(`Retrying (${retries + 1}/${maxRetries})...`)
+              retries++
+              setTimeout(tryMoveFile, 5000) // Retry after a delay
+            } else {
+              console.error(`Error moving ${fileName}: ${err.message}`)
+            }
+          } else {
+            console.log(`Moved ${fileName} to ${destinationPath}`)
+          }
+        })
+      }
+
+      tryMoveFile()
     }
   })
 
