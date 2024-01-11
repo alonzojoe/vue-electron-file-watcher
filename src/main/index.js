@@ -5,6 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import chokidar from 'chokidar'
 import fs from 'fs'
 import moment from 'moment/moment'
+import path from 'path'
 
 function createWindow() {
   // Create the browser window.
@@ -76,21 +77,19 @@ function startFileWatcher() {
 
   watcher.on('add', (filePath) => {
     const fileExtension = path.extname(filePath).toLowerCase()
-
-    // Check if the file is a PDF
     if (fileExtension === '.pdf') {
-      const fileName = path.basename(filePath)
+      const fileName = basename(filePath)
       const fileDate = moment()
 
       const year = fileDate.format('YYYY')
       const month = fileDate.format('MM')
       const day = fileDate.format('DD')
 
-      const destinationYearPath = path.join(targetFolder, year)
-      const destinationMonthPath = path.join(destinationYearPath, month)
-      const destinationDayPath = path.join(destinationMonthPath, day)
+      const destinationYearPath = join(targetFolder, year)
+      const destinationMonthPath = join(destinationYearPath, month)
+      const destinationDayPath = join(destinationMonthPath, day)
 
-      const destinationPath = path.join(destinationDayPath, fileName)
+      const destinationPath = join(destinationDayPath, fileName)
 
       // Create directories if they don't exist
       if (!fs.existsSync(destinationYearPath)) {
