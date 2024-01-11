@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { defineProps, watch, ref } from 'vue'
+import { watch, ref } from 'vue'
 import InputSwitch from 'primevue/inputswitch'
 const props = defineProps({
   started: Boolean

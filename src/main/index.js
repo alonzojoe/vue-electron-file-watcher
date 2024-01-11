@@ -1,7 +1,10 @@
-import { app, shell, BrowserWindow } from 'electron'
-import { join } from 'path'
+import { app, shell, BrowserWindow, contextBridge, ipcMain } from 'electron'
+import { join, basename } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import chokidar from 'chokidar'
+import fs from 'fs'
+import moment from 'moment/moment'
 
 function createWindow() {
   // Create the browser window.
@@ -35,6 +38,35 @@ function createWindow() {
   }
 }
 
+function startFileWatcher() {
+  const ordersFolder = 'D:\\ORDERS'
+  const targetFolder = 'D:\\O_DESTINATION'
+
+  const watcher = chokidar.watch(ordersFolder, {
+    ignored: /^\./,
+    persistent: true
+  })
+
+  console.log(`Watching for changes in ${ordersFolder}`)
+
+  watcher.on('add', (filePath) => {
+    const fileName = basename(filePath)
+    const destinationPath = join(targetFolder, fileName)
+
+    fs.rename(filePath, destinationPath, (err) => {
+      if (err) throw err
+      console.log(`Moved ${fileName} to ${targetFolder}`)
+    })
+  })
+
+  watcher.on('error', (error) => {
+    console.error(`Error watching files: ${error}`)
+  })
+}
+
+ipcMain.handle('startFileWatcher', () => {
+  startFileWatcher()
+})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -69,3 +101,6 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+module.exports = {
+  startFileWatcher // Export this function for access in the renderer process
+}

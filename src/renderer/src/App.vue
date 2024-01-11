@@ -1,8 +1,9 @@
 <script setup>
+import { onMounted, onBeforeUnmount, ref, computed, watch, watchEffect } from 'vue'
+const { ipcRenderer } = window.electron
 import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
 import Cmd from '@renderer/components/cmd/Cmd.vue'
-import { onMounted, onBeforeUnmount, ref, computed, watch, watchEffect } from 'vue'
 import Terminal from 'primevue/terminal'
 import TerminalService from 'primevue/terminalservice'
 import InputSwitch from 'primevue/inputswitch'
@@ -11,8 +12,10 @@ import TabPanel from 'primevue/tabpanel'
 import Button from 'primevue/button'
 import ScrollPanel from 'primevue/scrollpanel'
 
+// import chokidar from 'chokidar-socket-emitter'
 onMounted(() => {
   TerminalService.on('command', commandHandler)
+  console.log(ipcRenderer)
 })
 
 onBeforeUnmount(() => {
@@ -46,9 +49,19 @@ const commandHandler = (text) => {
 
 const started = ref(false)
 const startWatch = async () => {
-  started.value = true
-  TerminalService.emit('response', 'sample')
+  if (!started.value) {
+    started.value = true
+
+    try {
+      // Send a message to the main process to start the file watcher
+      await window.electron.ipcRenderer.invoke('startFileWatcher')
+    } catch (error) {
+      console.error('Error starting file watcher:', error)
+    }
+  }
 }
+
+// Handle the response from the main process, if needed
 
 const stopWatch = async () => {
   started.value = false
