@@ -38,6 +38,31 @@ function createWindow() {
   }
 }
 
+// function startFileWatcher() {
+//   const ordersFolder = 'D:\\ORDERS'
+//   const targetFolder = 'D:\\O_DESTINATION'
+
+//   const watcher = chokidar.watch(ordersFolder, {
+//     ignored: /^\./,
+//     persistent: true
+//   })
+
+//   console.log(`Watching for changes in ${ordersFolder}`)
+
+//   watcher.on('add', (filePath) => {
+//     const fileName = basename(filePath)
+//     const destinationPath = join(targetFolder, fileName)
+
+//     fs.rename(filePath, destinationPath, (err) => {
+//       if (err) throw err
+//       console.log(`Moved ${fileName} to ${targetFolder}`)
+//     })
+//   })
+
+//   watcher.on('error', (error) => {
+//     console.error(`Error watching files: ${error}`)
+//   })
+// }
 function startFileWatcher() {
   const ordersFolder = 'D:\\ORDERS'
   const targetFolder = 'D:\\O_DESTINATION'
@@ -50,13 +75,39 @@ function startFileWatcher() {
   console.log(`Watching for changes in ${ordersFolder}`)
 
   watcher.on('add', (filePath) => {
-    const fileName = basename(filePath)
-    const destinationPath = join(targetFolder, fileName)
+    const fileExtension = path.extname(filePath).toLowerCase()
 
-    fs.rename(filePath, destinationPath, (err) => {
-      if (err) throw err
-      console.log(`Moved ${fileName} to ${targetFolder}`)
-    })
+    // Check if the file is a PDF
+    if (fileExtension === '.pdf') {
+      const fileName = path.basename(filePath)
+      const fileDate = moment()
+
+      const year = fileDate.format('YYYY')
+      const month = fileDate.format('MM')
+      const day = fileDate.format('DD')
+
+      const destinationYearPath = path.join(targetFolder, year)
+      const destinationMonthPath = path.join(destinationYearPath, month)
+      const destinationDayPath = path.join(destinationMonthPath, day)
+
+      const destinationPath = path.join(destinationDayPath, fileName)
+
+      // Create directories if they don't exist
+      if (!fs.existsSync(destinationYearPath)) {
+        fs.mkdirSync(destinationYearPath)
+      }
+      if (!fs.existsSync(destinationMonthPath)) {
+        fs.mkdirSync(destinationMonthPath)
+      }
+      if (!fs.existsSync(destinationDayPath)) {
+        fs.mkdirSync(destinationDayPath)
+      }
+
+      fs.rename(filePath, destinationPath, (err) => {
+        if (err) throw err
+        console.log(`Moved ${fileName} to ${destinationPath}`)
+      })
+    }
   })
 
   watcher.on('error', (error) => {
