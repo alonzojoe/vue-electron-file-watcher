@@ -55,8 +55,9 @@ const startWatch = async () => {
     try {
       // Send a message to the main process to start the file watcher
       await window.electron.ipcRenderer.invoke('startFileWatcher')
+      // await startFileWatcher()
     } catch (error) {
-      console.error('Error starting file watcher:', error)
+      console.log('Error starting file watcher:', error)
     }
   }
 }
@@ -65,6 +66,12 @@ const startWatch = async () => {
 
 const stopWatch = async () => {
   started.value = false
+
+  try {
+    await window.electron.ipcRenderer.invoke('stopFileWatcher')
+  } catch (error) {
+    console.log('Error stopping the file watcher', error)
+  }
 }
 </script>
 

@@ -7,6 +7,8 @@ import fs from 'fs'
 import moment from 'moment/moment'
 import path from 'path'
 
+let watcher
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -68,7 +70,12 @@ function startFileWatcher() {
   const ordersFolder = 'D:\\ORDERS'
   const targetFolder = 'D:\\O_DESTINATION'
 
-  const watcher = chokidar.watch(ordersFolder, {
+  if (watcher) {
+    console.log('File watcher is already running')
+    return
+  }
+
+  watcher = chokidar.watch(ordersFolder, {
     ignored: /^\./,
     persistent: true
   })
@@ -91,7 +98,6 @@ function startFileWatcher() {
 
       const destinationPath = join(destinationDayPath, fileName)
 
-      // Create directories if they don't exist
       if (!fs.existsSync(destinationYearPath)) {
         fs.mkdirSync(destinationYearPath)
       }
@@ -116,7 +122,7 @@ function startFileWatcher() {
             if (err.code === 'EBUSY' && retries < maxRetries) {
               console.log(`Retrying (${retries + 1}/${maxRetries})...`)
               retries++
-              setTimeout(tryMoveFile, 5000) // Retry after a delay
+              setTimeout(tryMoveFile, 10000) // Retry after a delay
             } else {
               console.error(`Error moving ${fileName}: ${err.message}`)
             }
@@ -135,8 +141,22 @@ function startFileWatcher() {
   })
 }
 
+function stopFileWatcher() {
+  if (watcher) {
+    watcher.close()
+    watcher = null
+    console.log('File watcher stopped')
+  } else {
+    console.log('File watcher is not running')
+  }
+}
+
 ipcMain.handle('startFileWatcher', () => {
   startFileWatcher()
+})
+
+ipcMain.handle('stopFileWatcher', () => {
+  stopFileWatcher()
 })
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -173,5 +193,6 @@ app.on('window-all-closed', () => {
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
 module.exports = {
-  startFileWatcher // Export this function for access in the renderer process
+  startFileWatcher,
+  stopFileWatcher
 }
