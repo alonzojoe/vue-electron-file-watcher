@@ -6,6 +6,9 @@ import chokidar from 'chokidar'
 import fs from 'fs'
 import moment from 'moment/moment'
 import path from 'path'
+import store from '../renderer/src/store'
+import { extractRenderDetailID } from './service'
+const terminalText = store.getters.getMessage
 
 let watcher
 
@@ -66,6 +69,92 @@ function createWindow() {
 //     console.error(`Error watching files: ${error}`)
 //   })
 // }
+// function startFileWatcher() {
+//   const ordersFolder = 'D:\\ORDERS'
+//   const targetFolder = 'D:\\O_DESTINATION'
+
+//   if (watcher) {
+//     console.log('File watcher is already running')
+//     return
+//   }
+
+//   let isProcessing = false // Flag to track whether a file is being processed
+
+//   watcher = chokidar.watch(ordersFolder, {
+//     ignored: /^\./,
+//     persistent: true
+//   })
+
+//   console.log(`Watching for changes in ${ordersFolder}`)
+
+//   watcher.on('add', (filePath) => {
+//     const fileExtension = path.extname(filePath).toLowerCase()
+//     if (fileExtension === '.pdf' && !isProcessing) {
+//       isProcessing = true // Set flag to true, indicating a file is being processed
+
+//       const fileName = basename(filePath)
+//       const fileDate = moment()
+
+//       const year = fileDate.format('YYYY')
+//       const month = fileDate.format('MM')
+//       const day = fileDate.format('DD')
+
+//       const destinationYearPath = join(targetFolder, year)
+//       const destinationMonthPath = join(destinationYearPath, month)
+//       const destinationDayPath = join(destinationMonthPath, day)
+
+//       const destinationPath = join(destinationDayPath, fileName)
+
+//       if (!fs.existsSync(destinationYearPath)) {
+//         fs.mkdirSync(destinationYearPath)
+//       }
+//       if (!fs.existsSync(destinationMonthPath)) {
+//         fs.mkdirSync(destinationMonthPath)
+//       }
+//       if (!fs.existsSync(destinationDayPath)) {
+//         fs.mkdirSync(destinationDayPath)
+//       }
+
+//       // Retry moving the file with a delay (e.g., 500ms)
+//       const maxRetries = 3
+//       let retries = 0
+
+//       const tryMoveFile = () => {
+//         fs.rename(filePath, destinationPath, (err) => {
+//           if (err) {
+//             if (err.code === 'EBUSY' && retries < maxRetries) {
+//               console.log(`Retrying (${retries + 1}/${maxRetries})...`)
+//               retries++
+//               setTimeout(tryMoveFile, 10000) // Retry after a delay
+//             } else {
+//               console.error(`Error moving ${fileName}: ${err.message}`)
+//             }
+//           } else {
+//             console.log(`Moved ${fileName} to ${destinationPath}`)
+
+//             // Process the extracted information every 30 seconds
+
+//             const extractRenderDetailIDResult = extractRenderDetailID(fileName)
+
+//             console.log('Extracted Information:')
+//             console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
+
+//             // Add additional logic to handle the extracted information as needed
+
+//             isProcessing = false // Set flag to false, indicating processing is complete
+//           }
+//         })
+//       }
+
+//       setTimeout(tryMoveFile, 30000) // Delay the transfer of the file
+//     }
+//   })
+
+//   watcher.on('error', (error) => {
+//     console.error(`Error watching files: ${error}`)
+//   })
+// }
+
 function startFileWatcher() {
   const ordersFolder = 'D:\\ORDERS'
   const targetFolder = 'D:\\O_DESTINATION'
@@ -82,57 +171,84 @@ function startFileWatcher() {
 
   console.log(`Watching for changes in ${ordersFolder}`)
 
+  function tryMoveFile(filePath) {
+    const fileName = basename(filePath)
+    const fileDate = moment()
+
+    const year = fileDate.format('YYYY')
+    const month = fileDate.format('MM')
+    const day = fileDate.format('DD')
+
+    const destinationYearPath = join(targetFolder, year)
+    const destinationMonthPath = join(destinationYearPath, month)
+    const destinationDayPath = join(destinationMonthPath, day)
+
+    const destinationPath = join(destinationDayPath, fileName)
+
+    if (!fs.existsSync(destinationYearPath)) {
+      fs.mkdirSync(destinationYearPath)
+    }
+    if (!fs.existsSync(destinationMonthPath)) {
+      fs.mkdirSync(destinationMonthPath)
+    }
+    if (!fs.existsSync(destinationDayPath)) {
+      fs.mkdirSync(destinationDayPath)
+    }
+
+    // Retry moving the file with a delay (e.g., 500ms)
+    const maxRetries = 3
+    let retries = 0
+
+    fs.rename(filePath, destinationPath, (err) => {
+      if (err) {
+        if (err.code === 'EBUSY' && retries < maxRetries) {
+          console.log(`Retrying (${retries + 1}/${maxRetries})...`)
+          retries++
+          setTimeout(() => tryMoveFile(filePath), 10000) // Retry after a delay
+        } else {
+          console.error(`Error moving ${fileName}: ${err.message}`)
+        }
+      } else {
+        console.log(`Moved ${fileName} to ${destinationPath}`)
+
+        // Process the extracted information immediately
+        const extractRenderDetailIDResult = extractRenderDetailID(fileName)
+        console.log('Extracted Information:')
+        console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
+
+        // Add additional logic to handle the extracted information as needed
+
+        // Continue to the next file after a 30-second delay
+        setTimeout(processNextFile, 30000)
+      }
+    })
+  }
+
+  function processNextFile() {
+    const nextFile = watcherQueue.shift()
+
+    if (nextFile) {
+      tryMoveFile(nextFile)
+    } else {
+      // Queue is empty, set isProcessing to falsen
+      isProcessing = false
+    }
+  }
+
+  let isProcessing = false // Flag to track whether a file is being processed
+  const watcherQueue = [] // Queue to store files while one is being processed
+
   watcher.on('add', (filePath) => {
     const fileExtension = path.extname(filePath).toLowerCase()
-    if (fileExtension === '.pdf') {
-      const fileName = basename(filePath)
-      const fileDate = moment()
+    if (fileExtension === '.pdf' && !isProcessing) {
+      isProcessing = true // Set flag to true, indicating a file is being processed
+      watcherQueue.push(filePath) // Add file to the queue
 
-      const year = fileDate.format('YYYY')
-      const month = fileDate.format('MM')
-      const day = fileDate.format('DD')
-
-      const destinationYearPath = join(targetFolder, year)
-      const destinationMonthPath = join(destinationYearPath, month)
-      const destinationDayPath = join(destinationMonthPath, day)
-
-      const destinationPath = join(destinationDayPath, fileName)
-
-      if (!fs.existsSync(destinationYearPath)) {
-        fs.mkdirSync(destinationYearPath)
-      }
-      if (!fs.existsSync(destinationMonthPath)) {
-        fs.mkdirSync(destinationMonthPath)
-      }
-      if (!fs.existsSync(destinationDayPath)) {
-        fs.mkdirSync(destinationDayPath)
-      }
-
-      fs.rename(filePath, destinationPath, (err) => {
-        if (err) throw err
-        console.log(`Moved ${fileName} to ${destinationPath}`)
-      })
-      // Retry moving the file with a delay (e.g., 500ms)
-      const maxRetries = 3
-      let retries = 0
-
-      const tryMoveFile = () => {
-        fs.rename(filePath, destinationPath, (err) => {
-          if (err) {
-            if (err.code === 'EBUSY' && retries < maxRetries) {
-              console.log(`Retrying (${retries + 1}/${maxRetries})...`)
-              retries++
-              setTimeout(tryMoveFile, 10000) // Retry after a delay
-            } else {
-              console.error(`Error moving ${fileName}: ${err.message}`)
-            }
-          } else {
-            console.log(`Moved ${fileName} to ${destinationPath}`)
-          }
-        })
-      }
-
-      tryMoveFile()
+      // Process the first file in the queue
+      tryMoveFile(watcherQueue.shift())
+    } else if (fileExtension === '.pdf') {
+      // If isProcessing is true, add file to the queue
+      watcherQueue.push(filePath)
     }
   })
 

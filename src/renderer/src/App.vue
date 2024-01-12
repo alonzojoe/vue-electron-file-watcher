@@ -11,8 +11,11 @@ import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
 import Button from 'primevue/button'
 import ScrollPanel from 'primevue/scrollpanel'
-
+import { useStore } from 'vuex'
 // import chokidar from 'chokidar-socket-emitter'
+const store = useStore()
+const terminalText = computed(() => store.getters.getMessage)
+
 onMounted(() => {
   TerminalService.on('command', commandHandler)
   console.log(ipcRenderer)
@@ -84,6 +87,7 @@ const stopWatch = async () => {
       <div class="flex justify-content-center">
         <div>
           <Header />
+          <pre>{{ terminalText }}</pre>
         </div>
       </div>
       <div class="flex justify-content-center">
