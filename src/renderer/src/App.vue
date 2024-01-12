@@ -11,11 +11,11 @@ import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
 import Button from 'primevue/button'
 import ScrollPanel from 'primevue/scrollpanel'
-import { useStore } from 'vuex'
+import store from './store'
 // import chokidar from 'chokidar-socket-emitter'
-const store = useStore()
+// const store = useStore()
 const terminalText = computed(() => store.getters.getMessage)
-
+console.log(store)
 onMounted(() => {
   TerminalService.on('command', commandHandler)
   console.log(ipcRenderer)

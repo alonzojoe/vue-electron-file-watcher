@@ -9,7 +9,7 @@ import path from 'path'
 import store from '../renderer/src/store'
 import { extractRenderDetailID } from './service'
 const terminalText = store.getters.getMessage
-
+console.log(store)
 let watcher
 
 function createWindow() {
@@ -195,7 +195,7 @@ function startFileWatcher() {
       fs.mkdirSync(destinationDayPath)
     }
 
-    // Retry moving the file with a delay (e.g., 500ms)
+    // Retry moving the file with a delay after 10 seconds
     const maxRetries = 3
     let retries = 0
 
@@ -204,7 +204,7 @@ function startFileWatcher() {
         if (err.code === 'EBUSY' && retries < maxRetries) {
           console.log(`Retrying (${retries + 1}/${maxRetries})...`)
           retries++
-          setTimeout(() => tryMoveFile(filePath), 10000) // Retry after a delay
+          setTimeout(() => tryMoveFile(filePath), 10000)
         } else {
           console.error(`Error moving ${fileName}: ${err.message}`)
         }
@@ -230,7 +230,6 @@ function startFileWatcher() {
     if (nextFile) {
       tryMoveFile(nextFile)
     } else {
-      // Queue is empty, set isProcessing to falsen
       isProcessing = false
     }
   }
@@ -258,6 +257,11 @@ function startFileWatcher() {
 }
 
 function stopFileWatcher() {
+  const obj = {
+    font: 'fs-red',
+    text: 'sample0text'
+  }
+  store.commit('addMessage', obj)
   if (watcher) {
     watcher.close()
     watcher = null
