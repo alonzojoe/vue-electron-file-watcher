@@ -83,6 +83,57 @@ ipcRenderer.on('data-to-vue', (event, data) => {
   console.log('date received in vue component', data)
   terminalMessages.value.push(data)
 })
+
+const scrollPanelRef = ref()
+
+const scrollDown = () => {
+  // const myDiv = document.getElementById('cmd-text')
+  // console.log(myDiv.scrollHeight)
+  // console.log(myDiv)
+  // myDiv.scrollTo({
+  //   top: myDiv.scrollHeight,
+  //   behavior: 'smooth'
+  // })
+  // const myDiv = document.getElementById('cmd-text')
+
+  // if (myDiv) {
+  //   // If you want to scroll the window, use document.documentElement or document.body
+  //   myDiv.documentElement.scrollTo({
+  //     top: myDiv.scrollHeight,
+  //     behavior: 'smooth'
+  //   })
+  // }
+  const myDiv = document.getElementById('cmd-text')
+
+  if (myDiv) {
+    // If you want to scroll the window, use document.documentElement or document.body
+    myDiv.scrollTo({
+      top: myDiv.scrollHeight,
+      behavior: 'smooth'
+    })
+  }
+}
+
+const scrollToBottom = () => {
+  // get the div element by its id
+  const div = document.getElementById('myDiv')
+  // smooth scroll to the bottom of the div
+  div.scrollTo({
+    top: div.scrollHeight,
+    behavior: 'smooth'
+  })
+}
+
+// define a function to scroll to the top of the div
+const scrollToTop = () => {
+  // get the div element by its id
+  const div = document.getElementById('myDiv')
+  // smooth scroll to the top of the div
+  div.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
 </script>
 
 <template>
@@ -94,7 +145,7 @@ ipcRenderer.on('data-to-vue', (event, data) => {
       <div class="flex justify-content-center">
         <div>
           <Header />
-          <pre>{{ terminalMessages }}</pre>
+          <!-- <pre>{{ terminalMessages }}</pre> -->
         </div>
       </div>
       <div class="flex justify-content-center">
@@ -102,7 +153,7 @@ ipcRenderer.on('data-to-vue', (event, data) => {
       </div>
     </div>
     <div class="col-12">
-      <div class="flex justify-content-center mb-3 gap-2">
+      <div class="flex justify-content-center gap-2">
         <Button label="Start" icon="pi pi-play" @click="startWatch()" v-if="!started" />
         <Button
           class=""
@@ -113,70 +164,51 @@ ipcRenderer.on('data-to-vue', (event, data) => {
           v-else
         />
       </div>
-      <div class="flex align-items-center justify-content-center px-5">
-        <ScrollPanel
-          class="bg-gray-900 text-white border-round p-2 px-3 text-gray-400"
-          style="width: 100%; height: 180px"
-          :pt="{
-            bary: 'hover:bg-primary-400 bg-primary-300 opacity-100'
-          }"
-        >
-          <p>
-            <span>Welcome to RIS File Watcher</span> <br />
-            <span>File Watcher Started...</span> <br />
-            <span class="fc-green"
-              >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
-            >
-            <br />
-            <span class="fc-red"
-              >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File
-              Name Format.</span
-            >
-            <br />
-            <span class="fc-red"
-              >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File
-              Name Format.</span
-            >
-            <br />
-            <span class="fc-red"
-              >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File
-              Name Format.</span
-            >
-            <br />
-            <span class="fc-red"
-              >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File
-              Name Format.</span
-            >
-            <br />
-            <span class="fc-green"
-              >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
-            >
-            <br />
-            <span class="fc-green"
-              >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
-            >
-            <br />
-            <span class="fc-green"
-              >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
-            >
-            <br />
-            <span class="fc-yellow">🚀 $ Attemting to Re-scan the Orders folder</span> <br />
-            <span class="fc-red">🚀 $ File Watcher Stopped...</span> <br />
-          </p>
-        </ScrollPanel>
-      </div>
-      <div>
-        <!-- <Terminal
-          welcomeMessage="Welcome to RIS File Watcher"
-          prompt="🚀 $"
-          aria-label="PrimeVue Terminal Service"
-          :pt="{
-            root: 'bg-gray-900 text-white border-round',
-            prompt: 'text-gray-400 mr-2',
-            command: 'text-primary-300',
-            response: 'text-primary-300'
-          }"
-        /> -->
+    </div>
+    <div class="col-12">
+      <div class="terminal-container bg-gray-900 text-white border-round py-3 px-3 text-gray-400">
+        <p class="my-0" id="myDiv">
+          <span>Welcome to RIS File Watcher</span> <br />
+          <span>File Watcher Started...</span> <br />
+          <span class="fc-green"
+            >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
+          >
+          <br />
+          <span class="fc-red"
+            >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File Name
+            Format.</span
+          >
+          <br />
+          <span class="fc-red"
+            >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File Name
+            Format.</span
+          >
+          <br />
+          <span class="fc-red"
+            >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File Name
+            Format.</span
+          >
+          <br />
+          <span class="fc-red"
+            >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File Name
+            Format.</span
+          >
+          <br />
+          <span class="fc-green"
+            >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
+          >
+          <br />
+          <span class="fc-green"
+            >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
+          >
+          <br />
+          <span class="fc-green"
+            >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
+          >
+          <br />
+          <span class="fc-yellow">🚀 $ Attemting to Re-scan the Orders folder</span> <br />
+          <span class="fc-red">🚀 $ File Watcher Stopped...</span> <br />
+        </p>
       </div>
     </div>
     <div class="col-12">
@@ -189,4 +221,29 @@ ipcRenderer.on('data-to-vue', (event, data) => {
   </div>
 </template>
 
-<style></style>
+<style>
+#myDiv {
+  width: 100%;
+  height: 150px;
+  overflow-y: scroll;
+}
+
+#myDiv::-webkit-scrollbar {
+  width: 8px; /* Adjust the width as needed */
+}
+
+#myDiv::-webkit-scrollbar-thumb {
+  background-color: #6bd4b1;
+  border-radius: 4px;
+}
+
+#myDiv::-webkit-scrollbar-track {
+  background-color: #ffffff;
+  padding-left: 10px;
+  border-radius: 4px;
+}
+
+.terminal-container {
+  margin: 0 25px 0 25px !important;
+}
+</style>

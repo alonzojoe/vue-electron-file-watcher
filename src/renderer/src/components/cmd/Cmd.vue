@@ -1,7 +1,9 @@
 <template>
   <template>
+    <button @click="scrollDown">Scroll Down</button>
     <div class="flex justify-content-center flex-wrap">
       <ScrollPanel
+        ref="scrollPanelRef"
         style="width: 100%; height: 200px"
         :pt="{
           wrapper: {
@@ -28,6 +30,14 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import ScrollPanel from 'primevue/scrollpanel'
+
+const scrollPanelRef = ref()
+
+const scrollDown = () => {
+  if (scrollPanelRef.value) {
+    scrollPanelRef.value.scrollYTo(scrollPanelRef.value.scrollHeight)
+  }
+}
 </script>
 
 <style lang="scss" scoped></style>
