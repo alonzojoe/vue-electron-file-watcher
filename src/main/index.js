@@ -11,10 +11,10 @@ import { extractRenderDetailID } from './service'
 const terminalText = store.getters.getMessage
 console.log(store)
 let watcher
-
+let mainWindow
 function createWindow() {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -155,6 +155,10 @@ function createWindow() {
 //   })
 // }
 
+function sendDataToVue(data) {
+  mainWindow.webContents.send('data-to-vue', data)
+}
+
 function startFileWatcher() {
   const ordersFolder = 'D:\\ORDERS'
   const targetFolder = 'D:\\O_DESTINATION'
@@ -215,6 +219,11 @@ function startFileWatcher() {
         const extractRenderDetailIDResult = extractRenderDetailID(fileName)
         console.log('Extracted Information:')
         console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
+
+        sendDataToVue({
+          patientRenderDetailID: extractRenderDetailIDResult
+          // Add other extracted information here if needed
+        })
 
         // Add additional logic to handle the extracted information as needed
 

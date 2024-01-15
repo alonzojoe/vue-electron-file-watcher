@@ -76,6 +76,13 @@ const stopWatch = async () => {
     console.log('Error stopping the file watcher', error)
   }
 }
+
+const terminalMessages = ref([])
+
+ipcRenderer.on('data-to-vue', (event, data) => {
+  console.log('date received in vue component', data)
+  terminalMessages.value.push(data)
+})
 </script>
 
 <template>
@@ -87,7 +94,7 @@ const stopWatch = async () => {
       <div class="flex justify-content-center">
         <div>
           <Header />
-          <pre>{{ terminalText }}</pre>
+          <pre>{{ terminalMessages }}</pre>
         </div>
       </div>
       <div class="flex justify-content-center">
