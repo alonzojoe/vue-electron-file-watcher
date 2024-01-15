@@ -145,7 +145,7 @@ const scrollToTop = () => {
       <div class="flex justify-content-center">
         <div>
           <Header />
-          <!-- <pre>{{ terminalMessages }}</pre> -->
+          <pre>{{ terminalMessages }}</pre>
         </div>
       </div>
       <div class="flex justify-content-center">

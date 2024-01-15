@@ -7,7 +7,7 @@ import fs from 'fs'
 import moment from 'moment/moment'
 import path from 'path'
 import store from '../renderer/src/store'
-import { extractRenderDetailID } from './service'
+import { extractRenderDetailID, updatePath } from './service'
 const terminalText = store.getters.getMessage
 console.log(store)
 let watcher
@@ -175,7 +175,7 @@ function startFileWatcher() {
 
   console.log(`Watching for changes in ${ordersFolder}`)
 
-  function tryMoveFile(filePath) {
+  async function tryMoveFile(filePath) {
     const fileName = basename(filePath)
     const fileDate = moment()
 
@@ -203,7 +203,7 @@ function startFileWatcher() {
     const maxRetries = 3
     let retries = 0
 
-    fs.rename(filePath, destinationPath, (err) => {
+    fs.rename(filePath, destinationPath, async (err) => {
       if (err) {
         if (err.code === 'EBUSY' && retries < maxRetries) {
           console.log(`Retrying (${retries + 1}/${maxRetries})...`)
@@ -217,11 +217,15 @@ function startFileWatcher() {
 
         // Process the extracted information immediately
         const extractRenderDetailIDResult = extractRenderDetailID(fileName)
-        console.log('Extracted Information:')
+        console.log('Extracted Information:', destinationPath)
         console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
 
+        const uploadedResult = await updatePath({
+          ID: extractRenderDetailIDResult,
+          DocumentPath: destinationPath
+        })
         sendDataToVue({
-          patientRenderDetailID: extractRenderDetailIDResult
+          patientRenderDetailID: uploadedResult
           // Add other extracted information here if needed
         })
 

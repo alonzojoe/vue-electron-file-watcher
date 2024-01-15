@@ -1,4 +1,6 @@
 import moment from 'moment'
+// import api from '@renderer/api'
+
 const state = {
   data: {
     message: [
@@ -23,7 +25,14 @@ const mutations = {
   }
 }
 
-const actions = {}
+const actions = {
+  // async updateDocumentPath({ commit }, payload) {
+  //   const response = await api.patch('/updatePath', {
+  //     ID: payload.ID,
+  //     DocumentPath: payload.DocumentPath
+  //   })
+  // }
+}
 
 const getters = {
   getMessage: (state) => state.data.message
