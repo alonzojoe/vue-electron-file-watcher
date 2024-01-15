@@ -25,6 +25,17 @@ export function extractRenderNumber(fileName) {
   return match ? match[4] : null
 }
 
+export function finalizeDocPath(inputString) {
+  const regexPattern = /:(.+)/
+  const matchResult = inputString.match(regexPattern)
+
+  if (matchResult && matchResult[1]) {
+    return matchResult[1]
+  } else {
+    return null
+  }
+}
+
 export async function updatePath(payload) {
   let result
   const response = await axios.patch('http://192.163.8.244:70/api/updatePath', {
@@ -32,7 +43,7 @@ export async function updatePath(payload) {
     DocumentPath: payload.DocumentPath
   })
 
-  result = `${response.data.data.patient} results has been uploaded to Edify.`
+  result = `Patient ${response.data.data.patient} results has been uploaded to Edify.`
 
   return result
 }

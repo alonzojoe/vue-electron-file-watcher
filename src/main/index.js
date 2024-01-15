@@ -7,7 +7,7 @@ import fs from 'fs'
 import moment from 'moment/moment'
 import path from 'path'
 import store from '../renderer/src/store'
-import { extractRenderDetailID, updatePath } from './service'
+import { extractRenderDetailID, updatePath, finalizeDocPath } from './service'
 const terminalText = store.getters.getMessage
 console.log(store)
 let watcher
@@ -159,6 +159,14 @@ function sendDataToVue(data) {
   mainWindow.webContents.send('data-to-vue', data)
 }
 
+function terminalColor(color, result) {
+  sendDataToVue({
+    color: color,
+    text: result
+    // Add other extracted information here if needed
+  })
+}
+
 function startFileWatcher() {
   const ordersFolder = 'D:\\ORDERS'
   const targetFolder = 'D:\\O_DESTINATION'
@@ -222,7 +230,7 @@ function startFileWatcher() {
 
         const uploadedResult = await updatePath({
           ID: extractRenderDetailIDResult,
-          DocumentPath: destinationPath
+          DocumentPath: finalizeDocPath(destinationPath)
         })
         sendDataToVue({
           patientRenderDetailID: uploadedResult
