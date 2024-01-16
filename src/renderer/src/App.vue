@@ -96,7 +96,7 @@ const scrollToTop = () => {
 <template>
   <div class="grid">
     <div class="col-12">
-      <div class="flex justify-content-between align-items-center gap-2 pe-none">
+      <div class="flex justify-content-between align-items-center gap-2 px-4">
         <SwitchTheme :started="started" />
         <Status :started="started" />
       </div>
@@ -132,9 +132,9 @@ const scrollToTop = () => {
       </div>
       <div class="terminal-container bg-gray-900 text-white border-round py-3 px-3 text-gray-400">
         <p class="my-0 text-sm" id="myDiv">
-          <span>Welcome to RIS File Watcher <br /></span>
+          <span>🚀 $> Welcome to RIS File Watcher <br /></span>
           <span v-for="(t, index) in terminalMessages" :key="index" :class="`${t.color}`"
-            >🚀 $ {{ t.text }} <br
+            >🚀 $> {{ t.text }} <br
           /></span>
         </p>
       </div>

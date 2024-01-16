@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-2 align-items-center">
+  <div class="flex gap-2 align-items-center pe-none">
     <span>{{ props.started ? 'Connected' : 'Disconnected' }}</span>
     <InputSwitch v-model="bool" />
   </div>
