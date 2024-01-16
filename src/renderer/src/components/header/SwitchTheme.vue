@@ -1,7 +1,7 @@
 <template>
-  <div class="flex gap-2 align-items-center">
-    <span>{{ props.started ? 'Connected' : 'Disconnected' }}</span>
+  <div>
     <InputSwitch v-model="bool" />
+    pi-moon
   </div>
 </template>
 

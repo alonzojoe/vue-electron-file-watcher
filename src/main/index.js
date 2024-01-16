@@ -183,7 +183,7 @@ function startFileWatcher() {
 
   console.log(`Watching for changes in ${ordersFolder}`)
 
-  setTerminal('fc-white', 'File Watcher Started...')
+  setTerminal('fc-green', 'File Watcher Started...')
 
   async function tryMoveFile(filePath) {
     const fileName = basename(filePath)
@@ -200,25 +200,25 @@ function startFileWatcher() {
     const destinationPath = join(destinationDayPath, fileName)
 
     if (!fs.existsSync(destinationYearPath)) {
-      setTerminal('fc-yellow', `Checking if folder year ${year} exists 200`)
+      setTerminal('fc-orange', `Checking if folder year ${year} exists`)
       fs.mkdirSync(destinationYearPath)
       setTerminal('fc-green', `Folder ${destinationYearPath} created 201`)
     } else {
-      setTerminal('fc-green', `Folder existed ${destinationYearPath} 200`)
+      setTerminal('fc-yellow', `Folder existed ${destinationYearPath}`)
     }
     if (!fs.existsSync(destinationMonthPath)) {
-      setTerminal('fc-yellow', `Checking if folder month ${month} exists 200`)
+      setTerminal('fc-orange', `Checking if folder month ${month} exists`)
       fs.mkdirSync(destinationMonthPath)
-      setTerminal('fc-green', `Folder ${destinationMonthPath} created 201`)
+      setTerminal('fc-green', `Folder ${destinationMonthPath} created`)
     } else {
-      setTerminal('fc-green', `Folder existed ${destinationMonthPath} 200`)
+      setTerminal('fc-yellow', `Folder existed ${destinationMonthPath}`)
     }
     if (!fs.existsSync(destinationDayPath)) {
-      setTerminal('fc-yellow', `Checking if folder day ${day} exists 200`)
+      setTerminal('fc-orange', `Checking if folder day ${day} exists`)
       fs.mkdirSync(destinationDayPath)
-      setTerminal('fc-green', `Folder ${destinationDayPath} created 201`)
+      setTerminal('fc-green', `Folder ${destinationDayPath} created`)
     } else {
-      setTerminal('fc-green', `Folder existed ${destinationDayPath} 200`)
+      setTerminal('fc-yellow', `Folder existed ${destinationDayPath}`)
     }
 
     // Retry moving the file with a delay after 10 seconds

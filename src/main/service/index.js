@@ -1,5 +1,6 @@
 import api from '../../renderer/src/api'
 import axios from 'axios'
+
 export function extractRenderDetailID(fileName) {
   const match = fileName.match(/^(\d+)/)
   return match ? match[1] : null
@@ -43,7 +44,7 @@ export async function updatePath(payload) {
     DocumentPath: payload.DocumentPath
   })
 
-  result = `Patient ${response.data.data.patient} results has been uploaded to Edify.`
+  result = `Patient ${response.data.data.patient} results have been uploaded to Edify.`
 
   return result
 }

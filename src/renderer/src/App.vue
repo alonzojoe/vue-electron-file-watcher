@@ -3,17 +3,11 @@ import { onMounted, onBeforeUnmount, ref, computed, watch, watchEffect } from 'v
 const { ipcRenderer } = window.electron
 import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
-import Cmd from '@renderer/components/cmd/Cmd.vue'
-import Terminal from 'primevue/terminal'
 import TerminalService from 'primevue/terminalservice'
-import InputSwitch from 'primevue/inputswitch'
-import TabView from 'primevue/tabview'
-import TabPanel from 'primevue/tabpanel'
+import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import Button from 'primevue/button'
-import ScrollPanel from 'primevue/scrollpanel'
 import store from './store'
-// import chokidar from 'chokidar-socket-emitter'
-// const store = useStore()
+
 const terminalText = computed(() => store.getters.getMessage)
 console.log(store)
 onMounted(() => {
@@ -56,16 +50,12 @@ const startWatch = async () => {
     started.value = true
 
     try {
-      // Send a message to the main process to start the file watcher
       await window.electron.ipcRenderer.invoke('startFileWatcher')
-      // await startFileWatcher()
     } catch (error) {
       console.log('Error starting file watcher:', error)
     }
   }
 }
-
-// Handle the response from the main process, if needed
 
 const stopWatch = async () => {
   started.value = false
@@ -82,73 +72,34 @@ const terminalMessages = ref([])
 ipcRenderer.on('data-to-vue', (event, data) => {
   console.log('date received in vue component', data)
   terminalMessages.value.push(data)
-  // scrollToBottom()
+
   setTimeout(scrollToBottom, 500)
 })
 
-const scrollPanelRef = ref()
-
-const scrollDown = () => {
-  // const myDiv = document.getElementById('cmd-text')
-  // console.log(myDiv.scrollHeight)
-  // console.log(myDiv)
-  // myDiv.scrollTo({
-  //   top: myDiv.scrollHeight,
-  //   behavior: 'smooth'
-  // })
-  // const myDiv = document.getElementById('cmd-text')
-
-  // if (myDiv) {
-  //   // If you want to scroll the window, use document.documentElement or document.body
-  //   myDiv.documentElement.scrollTo({
-  //     top: myDiv.scrollHeight,
-  //     behavior: 'smooth'
-  //   })
-  // }
-  const myDiv = document.getElementById('cmd-text')
-
-  if (myDiv) {
-    // If you want to scroll the window, use document.documentElement or document.body
-    myDiv.scrollTo({
-      top: myDiv.scrollHeight,
-      behavior: 'smooth'
-    })
-  }
-}
-
 const scrollToBottom = () => {
-  // get the div element by its id
   const div = document.getElementById('myDiv')
-  // smooth scroll to the bottom of the div
   div.scrollTo({
     top: div.scrollHeight,
     behavior: 'smooth'
   })
 }
 
-// define a function to scroll to the top of the div
 const scrollToTop = () => {
-  // get the div element by its id
   const div = document.getElementById('myDiv')
-  // smooth scroll to the top of the div
   div.scrollTo({
     top: 0,
     behavior: 'smooth'
   })
 }
-
-// watch(() => {
-//   terminalMessages.value
-//   if (terminalMessages) {
-//     scrollToBottom()
-//   }
-// })
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
-      <Status :started="started" />
+      <div class="flex justify-content-between align-items-center gap-2 pe-none">
+        <SwitchTheme :started="started" />
+        <Status :started="started" />
+      </div>
     </div>
     <div class="col-12">
       <div class="flex justify-content-center">
@@ -158,7 +109,7 @@ const scrollToTop = () => {
         </div>
       </div>
       <div class="flex justify-content-center">
-        <span class="text-5xl font-semibold mt-3">RIS File Watcher</span>
+        <span class="text-3xl font-semibold mt-3">RIS File Watcher</span>
       </div>
     </div>
     <div class="col-12">
@@ -174,7 +125,11 @@ const scrollToTop = () => {
         />
       </div>
     </div>
-    <div class="col-12">
+    <div class="col-12 mt-0">
+      <div class="flex align-items-center justify-content-end gap-2 px-4 mb-2 mt-0">
+        <i class="pi pi-spin pi-spinner text-xs" style="font-size: 1rem"></i
+        ><span>File Watcher is running...</span>
+      </div>
       <div class="terminal-container bg-gray-900 text-white border-round py-3 px-3 text-gray-400">
         <p class="my-0 text-sm" id="myDiv">
           <span>Welcome to RIS File Watcher <br /></span>
@@ -185,7 +140,7 @@ const scrollToTop = () => {
       </div>
     </div>
     <div class="col-12">
-      <div class="flex justify-content-end">
+      <div class="flex justify-content-end px-4">
         <span class="text-xs"
           >RIS File Watcher v.1.0 @build Electron v28.1.2 @Joenell Alonzo (Software Engineer)</span
         >
