@@ -82,6 +82,8 @@ const terminalMessages = ref([])
 ipcRenderer.on('data-to-vue', (event, data) => {
   console.log('date received in vue component', data)
   terminalMessages.value.push(data)
+  // scrollToBottom()
+  setTimeout(scrollToBottom, 500)
 })
 
 const scrollPanelRef = ref()
@@ -134,6 +136,13 @@ const scrollToTop = () => {
     behavior: 'smooth'
   })
 }
+
+// watch(() => {
+//   terminalMessages.value
+//   if (terminalMessages) {
+//     scrollToBottom()
+//   }
+// })
 </script>
 
 <template>
@@ -145,7 +154,7 @@ const scrollToTop = () => {
       <div class="flex justify-content-center">
         <div>
           <Header />
-          <pre>{{ terminalMessages }}</pre>
+          <!-- <pre>{{ terminalMessages }}</pre> -->
         </div>
       </div>
       <div class="flex justify-content-center">
@@ -167,47 +176,11 @@ const scrollToTop = () => {
     </div>
     <div class="col-12">
       <div class="terminal-container bg-gray-900 text-white border-round py-3 px-3 text-gray-400">
-        <p class="my-0" id="myDiv">
-          <span>Welcome to RIS File Watcher</span> <br />
-          <span>File Watcher Started...</span> <br />
-          <span class="fc-green"
-            >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
-          >
-          <br />
-          <span class="fc-red"
-            >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File Name
-            Format.</span
-          >
-          <br />
-          <span class="fc-red"
-            >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File Name
-            Format.</span
-          >
-          <br />
-          <span class="fc-red"
-            >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File Name
-            Format.</span
-          >
-          <br />
-          <span class="fc-red"
-            >🚀 $ Unable to Process Patient 0952214 De Dios Maria CT Scan Results, error: File Name
-            Format.</span
-          >
-          <br />
-          <span class="fc-green"
-            >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
-          >
-          <br />
-          <span class="fc-green"
-            >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
-          >
-          <br />
-          <span class="fc-green"
-            >🚀 $ Patient 0952214 De Jesus Juan CT Scan Results has been uploaded to Edify.</span
-          >
-          <br />
-          <span class="fc-yellow">🚀 $ Attemting to Re-scan the Orders folder</span> <br />
-          <span class="fc-red">🚀 $ File Watcher Stopped...</span> <br />
+        <p class="my-0 text-sm" id="myDiv">
+          <span>Welcome to RIS File Watcher <br /></span>
+          <span v-for="(t, index) in terminalMessages" :key="index" :class="`${t.color}`"
+            >🚀 $ {{ t.text }} <br
+          /></span>
         </p>
       </div>
     </div>
