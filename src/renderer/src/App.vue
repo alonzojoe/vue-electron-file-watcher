@@ -96,7 +96,7 @@ const scrollToTop = () => {
 <template>
   <div class="grid">
     <div class="col-12">
-      <div class="flex justify-content-between align-items-center gap-2 px-4">
+      <div class="flex justify-content-between align-items-center gap-2 px-2">
         <SwitchTheme :started="started" />
         <Status :started="started" />
       </div>
