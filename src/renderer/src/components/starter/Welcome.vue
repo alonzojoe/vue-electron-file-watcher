@@ -5,7 +5,10 @@
         <Header />
       </div>
       <div class="col-12 text-center">
-        <span class="mt-5">{{ startupMessage }}</span>
+        <span class="mt-5"
+          ><i class="pi pi-spin pi-spinner text-xs mr-2" style="font-size: 1rem"></i
+          >{{ startupMessage }}</span
+        >
       </div>
       <div class="col-12">
         <ProgressBar class="" :value="value1" />
@@ -30,7 +33,7 @@ const showMenu = (data) => {
   }
 }
 
-const startupMessage = ref('')
+const startupMessage = ref('Loading Resources...')
 const setStartup = (progress) => {
   if (progress < 15) {
     startupMessage.value = 'Loading Resources...'
