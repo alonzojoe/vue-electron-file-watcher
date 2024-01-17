@@ -5,7 +5,7 @@
         <Header />
       </div>
       <div class="col-12 text-center">
-        <span class="mt-5">Launching File Watcher...</span>
+        <span class="mt-5">{{ startupMessage }}</span>
       </div>
       <div class="col-12">
         <ProgressBar class="" :value="value1" />
@@ -17,10 +17,9 @@
 <script setup>
 import Header from '../header/Header.vue'
 import ProgressBar from 'primevue/progressbar'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 
 const emit = defineEmits(['show-main'])
-
 const flagBool = ref(false)
 const showMenu = (data) => {
   if (data >= 100 && !flagBool.value) {
@@ -28,6 +27,21 @@ const showMenu = (data) => {
       emit('show-main', true)
       flagBool.value = true
     }, 2000)
+  }
+}
+
+const startupMessage = ref('')
+const setStartup = (progress) => {
+  if (progress < 15) {
+    startupMessage.value = 'Loading Resources...'
+  } else if (progress < 30) {
+    startupMessage.value = 'Checking Directories...'
+  } else if (progress < 60) {
+    startupMessage.value = 'Checking API`s...'
+  } else if (progress < 90) {
+    startupMessage.value = 'Checking Additional Resources...'
+  } else if (progress < 100) {
+    startupMessage.value = 'Launching File Watcher...'
   }
 }
 
@@ -47,6 +61,7 @@ const startProgress = () => {
     if (newValue >= 100) {
       newValue = 100
     }
+    setStartup(newValue)
     value1.value = newValue
     showMenu(newValue)
   }, 300)

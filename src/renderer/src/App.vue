@@ -48,7 +48,7 @@ const showSuccess = (data) => {
     severity: 'success',
     summary: 'Message',
     detail: `${data}`,
-    life: 10000000
+    life: 600000
   })
 }
 const started = ref(false)
@@ -107,7 +107,7 @@ const scrollToTop = () => {
 
 const mainMenu = ref(false)
 const showMain = (event) => {
-  alert('test')
+  mainMenu.value = true
 }
 
 onMounted(() => {
@@ -117,8 +117,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <Welcome @show-main="showMain($event)" />
-  <div class="grid" v-show="1 + 1 == 5">
+  <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
+  <div class="grid fadein animation-duration-1000" v-show="mainMenu">
     <Toast />
     <div class="col-12">
       <div class="flex justify-content-between align-items-center gap-2 px-2">
