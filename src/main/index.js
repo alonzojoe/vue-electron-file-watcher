@@ -159,6 +159,10 @@ function sendDataToVue(data) {
   mainWindow.webContents.send('data-to-vue', data)
 }
 
+function toastToVue(data) {
+  mainWindow.webContents.send('toast-to-vue', data)
+}
+
 function setTerminal(color, result) {
   sendDataToVue({
     color: color,
@@ -248,7 +252,7 @@ function startFileWatcher() {
         })
 
         setTerminal('fc-green', uploadedResult)
-
+        toastToVue(uploadedResult)
         // sendDataToVue({
         //   patientRenderDetailID: uploadedResult
         //   // Add other extracted information here if needed

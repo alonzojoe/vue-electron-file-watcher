@@ -44,7 +44,7 @@ export async function updatePath(payload) {
     DocumentPath: payload.DocumentPath
   })
 
-  result = `Patient ${response.data.data.patient} results have been uploaded to Edify.`
+  result = `Patient ${response.data.data.patient} results have been uploaded.`
 
   return result
 }

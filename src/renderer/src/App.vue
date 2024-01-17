@@ -1,19 +1,19 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref, computed, watch, watchEffect } from 'vue'
+import { onMounted, onBeforeUnmount, ref, computed, watch, onUnmounted } from 'vue'
 const { ipcRenderer } = window.electron
+import Welcome from '@renderer/components/starter/Welcome.vue'
 import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
-import TerminalService from 'primevue/terminalservice'
 import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
+import TerminalService from 'primevue/terminalservice'
+
 import Button from 'primevue/button'
 import store from './store'
-
+import { useToast } from 'primevue/usetoast'
+import Toast from 'primevue/toast'
+const toast = useToast()
 const terminalText = computed(() => store.getters.getMessage)
 console.log(store)
-onMounted(() => {
-  TerminalService.on('command', commandHandler)
-  console.log(ipcRenderer)
-})
 
 onBeforeUnmount(() => {
   TerminalService.off('command', commandHandler)
@@ -43,7 +43,14 @@ const commandHandler = (text) => {
 
   TerminalService.emit('response', response)
 }
-
+const showSuccess = (data) => {
+  toast.add({
+    severity: 'success',
+    summary: 'Message',
+    detail: `${data}`,
+    life: 10000000
+  })
+}
 const started = ref(false)
 const startWatch = async () => {
   if (!started.value) {
@@ -70,10 +77,16 @@ const stopWatch = async () => {
 const terminalMessages = ref([])
 
 ipcRenderer.on('data-to-vue', (event, data) => {
-  console.log('date received in vue component', data)
+  console.log('data received in vue component', data)
   terminalMessages.value.push(data)
 
   setTimeout(scrollToBottom, 500)
+})
+
+ipcRenderer.on('toast-to-vue', (event, data) => {
+  console.log('toast message received in vue component', data)
+
+  showSuccess(data)
 })
 
 const scrollToBottom = () => {
@@ -91,9 +104,15 @@ const scrollToTop = () => {
     behavior: 'smooth'
   })
 }
+
+onMounted(() => {
+  TerminalService.on('command', commandHandler)
+  console.log(ipcRenderer)
+})
 </script>
 
 <template>
+  <Toast />
   <div class="grid">
     <div class="col-12">
       <div class="flex justify-content-between align-items-center gap-2 px-2">
@@ -114,9 +133,15 @@ const scrollToTop = () => {
     </div>
     <div class="col-12">
       <div class="flex justify-content-center gap-2">
-        <Button label="Start" icon="pi pi-play" @click="startWatch()" v-if="!started" />
         <Button
-          class=""
+          class="btn-control"
+          label="Start"
+          icon="pi pi-play"
+          @click="startWatch()"
+          v-if="!started"
+        />
+        <Button
+          class="btn-control"
           label="Stop"
           icon="pi pi-stop"
           severity="danger"
@@ -127,14 +152,20 @@ const scrollToTop = () => {
     </div>
     <div class="col-12 mt-0">
       <div class="flex align-items-center justify-content-end gap-2 px-4 mb-2 mt-0">
-        <i class="pi pi-spin pi-spinner text-xs" style="font-size: 1rem"></i
-        ><span>File Watcher is running...</span>
+        <i
+          class="pi text-xs"
+          :class="!started ? 'pi-circle-fill' : 'pi-spin pi-spinner'"
+          style="font-size: 1rem"
+        ></i
+        ><span>
+          {{ !started ? 'File Watcher is currently stopped' : 'File Watcher is running' }}</span
+        ><i class="pi pi-cloud-upload" style="font-size: 1rem"></i>
       </div>
       <div class="terminal-container bg-gray-900 text-white border-round py-3 px-3 text-gray-400">
         <p class="my-0 text-sm" id="myDiv">
-          <span>🚀 $> Welcome to RIS File Watcher <br /></span>
+          <span>🚀 $ Welcome to RIS File Watcher <br /></span>
           <span v-for="(t, index) in terminalMessages" :key="index" :class="`${t.color}`"
-            >🚀 $> {{ t.text }} <br
+            >🚀 $ {{ t.text }} <br
           /></span>
         </p>
       </div>
@@ -173,5 +204,44 @@ const scrollToTop = () => {
 
 .terminal-container {
   margin: 0 25px 0 25px !important;
+}
+
+element.style {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1101;
+}
+.p-toast {
+  opacity: 1;
+}
+.p-component {
+  font-family: var(--font-family);
+  font-feature-settings: var(--font-feature-settings, normal);
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.p-toast {
+  width: 17rem !important;
+  white-space: pre-line !important;
+  word-break: break-word !important;
+}
+
+.p-component {
+  font-size: 0.7rem;
+}
+.btn-control {
+  font-size: 1rem !important;
+}
+
+.p-toast .p-toast-message .p-toast-message-content .p-toast-message-icon.p-icon {
+  margin-top: 1rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+.p-toast.p-component.p-toast-top-right.p-ripple-disabled {
+  top: 42px !important;
 }
 </style>
