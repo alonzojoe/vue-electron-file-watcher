@@ -105,6 +105,11 @@ const scrollToTop = () => {
   })
 }
 
+const mainMenu = ref(false)
+const showMain = (event) => {
+  alert('test')
+}
+
 onMounted(() => {
   TerminalService.on('command', commandHandler)
   console.log(ipcRenderer)
@@ -112,7 +117,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Welcome />
+  <Welcome @show-main="showMain($event)" />
   <div class="grid" v-show="1 + 1 == 5">
     <Toast />
     <div class="col-12">

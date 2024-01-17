@@ -4,11 +4,11 @@
       <div class="col-12 flex justify-content-center">
         <Header />
       </div>
-      <div class="col-12">
-        <ProgressBar class="mt-4" :value="value1" />
+      <div class="col-12 text-center">
+        <span class="mt-5">Launching File Watcher...</span>
       </div>
       <div class="col-12">
-        <ProgressBar class="mt-4" :value="value1" />
+        <ProgressBar class="" :value="value1" />
       </div>
     </div>
   </div>
@@ -18,6 +18,18 @@
 import Header from '../header/Header.vue'
 import ProgressBar from 'primevue/progressbar'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+const emit = defineEmits(['show-main'])
+
+const flagBool = ref(false)
+const showMenu = (data) => {
+  if (data >= 100 && !flagBool.value) {
+    setTimeout(() => {
+      emit('show-main', true)
+      flagBool.value = true
+    }, 2000)
+  }
+}
 
 onMounted(() => {
   startProgress()
@@ -36,6 +48,7 @@ const startProgress = () => {
       newValue = 100
     }
     value1.value = newValue
+    showMenu(newValue)
   }, 300)
 }
 const endProgress = () => {
