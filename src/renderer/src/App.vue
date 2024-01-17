@@ -112,8 +112,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <Toast />
-  <div class="grid">
+  <Welcome />
+  <div class="grid" v-show="1 + 1 == 5">
+    <Toast />
     <div class="col-12">
       <div class="flex justify-content-between align-items-center gap-2 px-2">
         <SwitchTheme :started="started" />
