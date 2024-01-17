@@ -157,7 +157,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="col-12 mt-0">
-      <div class="flex align-items-center justify-content-end gap-2 px-4 mb-2 mt-0">
+      <div class="flex align-items-center justify-content-start gap-2 px-4 mb-2 mt-0">
         <i
           class="pi text-xs"
           :class="!started ? 'pi-circle-fill' : 'pi-spin pi-spinner'"
@@ -242,7 +242,7 @@ element.style {
 }
 
 .p-toast .p-toast-message .p-toast-message-content .p-toast-message-icon.p-icon {
-  margin-top: 1rem !important;
+  margin-top: 0.1rem !important;
   width: 1rem !important;
   height: 1rem !important;
 }

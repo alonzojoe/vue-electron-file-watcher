@@ -10,7 +10,7 @@ import path from 'path'
 import store from '../renderer/src/store'
 import { extractRenderDetailID, updatePath, finalizeDocPath } from './service'
 const terminalText = store.getters.getMessage
-console.log(store)
+
 let watcher
 let mainWindow
 function createWindow() {
