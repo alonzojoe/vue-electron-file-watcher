@@ -8,9 +8,6 @@ import fs from 'fs'
 import fsExtra from 'fs-extra'
 import moment from 'moment/moment'
 import path from 'path'
-import store from '../renderer/src/store'
-
-const terminalText = store.getters.getMessage
 
 let watcher
 let mainWindow

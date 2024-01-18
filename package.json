@@ -1,7 +1,8 @@
 {
   "name": "ris-file-watcher",
+  "productName": "RIS_FIleWatcher",
   "version": "1.0.0",
-  "description": "An Electron application with Vue",
+  "description": "A File Watcher that transfer results from orders folder to destination folder.",
   "main": "./out/main/index.js",
   "author": "example.com",
   "homepage": "https://electron-vite.org",
