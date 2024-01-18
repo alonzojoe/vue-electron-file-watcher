@@ -1,13 +1,13 @@
 import { app, shell, BrowserWindow, contextBridge, ipcMain } from 'electron'
-import { join, basename } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { extractRenderDetailID, updatePath, finalizeDocPath } from './service'
-import icon from '../../resources/icon.png?asset'
+import { join, basename } from 'path'
 import chokidar from 'chokidar'
 import fs from 'fs'
 import fsExtra from 'fs-extra'
 import moment from 'moment/moment'
 import path from 'path'
+import icon from '../../resources/icon.png?asset'
 
 let watcher
 let mainWindow
