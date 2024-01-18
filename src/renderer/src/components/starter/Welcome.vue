@@ -2,7 +2,7 @@
   <div class="welcome-container flex align-items-center justify-content-center">
     <div class="w-7 grid grid-items">
       <div class="col-12 flex justify-content-center">
-        <Header />
+        <Header class="mb-2" />
       </div>
       <div class="col-12 text-center">
         <span class="mt-5"
@@ -11,7 +11,7 @@
         >
       </div>
       <div class="col-12">
-        <ProgressBar class="" :value="value1" />
+        <ProgressBar class="mt-1" :value="value1" />
       </div>
     </div>
   </div>
@@ -29,7 +29,7 @@ const showMenu = (data) => {
     setTimeout(() => {
       emit('show-main', true)
       flagBool.value = true
-    }, 2000)
+    }, 1000)
   }
 }
 
