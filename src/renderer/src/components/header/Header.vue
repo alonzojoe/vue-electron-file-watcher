@@ -1,9 +1,10 @@
 <template>
-  <Image src="src/assets/images/electron.png" alt="Image" width="180" />
+  <Image :src="icon" alt="Electron Logo" width="180" />
 </template>
 
 <script setup>
 import Image from 'primevue/image'
+import icon from '../../../../../resources/electron.png'
 </script>
 
 <style lang="scss" scoped></style>
