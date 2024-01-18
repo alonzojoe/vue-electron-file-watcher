@@ -8,9 +8,12 @@ import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import TerminalService from 'primevue/terminalservice'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
+import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
+import { useConfirm } from 'primevue/useconfirm'
 
 const toast = useToast()
+const confirm = useConfirm()
 
 onBeforeUnmount(() => {
   TerminalService.off('command', commandHandler)
@@ -38,6 +41,12 @@ const startWatch = async () => {
 
     try {
       await window.electron.ipcRenderer.invoke('startFileWatcher')
+      toast.add({
+        severity: 'success',
+        summary: 'Message',
+        detail: 'File Watcher Started.',
+        life: 3000
+      })
     } catch (error) {
       console.log('Error starting file watcher:', error)
     }
@@ -52,6 +61,26 @@ const stopWatch = async () => {
   } catch (error) {
     console.log('Error stopping the file watcher', error)
   }
+}
+
+const confirmStop = () => {
+  confirm.require({
+    group: 'positioned',
+    message: 'Are you sure you want to stop the File Watcher?',
+    header: 'Confirmation',
+    icon: 'pi pi-info-circle',
+    position: 'left',
+    accept: () => {
+      stopWatch()
+      toast.add({
+        severity: 'error',
+        summary: 'Message',
+        detail: 'File Watcher Stopped.',
+        life: 3000
+      })
+    },
+    reject: () => {}
+  })
 }
 
 const terminalMessages = ref([])
@@ -100,6 +129,7 @@ onMounted(() => {
   <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
   <div class="grid fadein animation-duration-1000" v-show="mainMenu">
     <Toast />
+    <ConfirmDialog group="positioned"></ConfirmDialog>
     <div class="col-12">
       <div class="flex justify-content-between align-items-center gap-2 px-2">
         <SwitchTheme :started="started" />
@@ -130,7 +160,7 @@ onMounted(() => {
           label="Stop"
           icon="pi pi-stop"
           severity="danger"
-          @click="stopWatch()"
+          @click="confirmStop()"
           v-else
         />
       </div>
@@ -228,5 +258,17 @@ element.style {
 
 .p-toast.p-component.p-toast-top-right.p-ripple-disabled {
   top: 42px !important;
+}
+
+.p-dialog .p-dialog-content {
+  padding: 0 1.5rem 1rem 1.5rem !important;
+}
+
+.p-dialog .p-dialog-header {
+  padding: 1rem !important;
+}
+
+.p-confirm-dialog-message {
+  font-size: 0.7rem;
 }
 </style>
