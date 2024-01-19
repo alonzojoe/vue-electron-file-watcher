@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, onBeforeUnmount, ref, computed, watch, onUnmounted } from 'vue'
-const { ipcRenderer } = window.electron
 import Welcome from '@renderer/components/starter/Welcome.vue'
 import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
@@ -9,9 +8,11 @@ import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import TerminalService from 'primevue/terminalservice'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
+import moment from 'moment'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
+const { ipcRenderer } = window.electron
 
 const particlesLoaded = async (container) => {
   console.log('Particles container loaded', container)
@@ -20,17 +21,6 @@ const particlesLoaded = async (container) => {
 const toast = useToast()
 const confirm = useConfirm()
 
-onBeforeUnmount(() => {
-  TerminalService.off('command', commandHandler)
-})
-
-const commandHandler = (text) => {
-  let response
-  let argsIndex = text.indexOf(' ')
-  let command = argsIndex !== -1 ? text.substring(0, argsIndex) : text
-  response = '🚀 $ ' + text
-  TerminalService.emit('response', response)
-}
 const showSuccess = (data) => {
   toast.add({
     severity: 'success',
@@ -98,8 +88,6 @@ const terminalMessages = ref([
 ipcRenderer.on('data-to-vue', (event, data) => {
   console.log('data received in vue component', data)
   terminalMessages.value.push(data)
-
-  setTimeout(scrollToBottom, 500)
 })
 
 ipcRenderer.on('toast-to-vue', (event, data) => {
@@ -107,14 +95,6 @@ ipcRenderer.on('toast-to-vue', (event, data) => {
 
   showSuccess(data)
 })
-
-const scrollToBottom = () => {
-  const div = document.getElementById('myDiv')
-  div.scrollTo({
-    top: div.scrollHeight,
-    behavior: 'smooth'
-  })
-}
 
 const mainMenu = ref(false)
 const showMain = (event) => {
@@ -135,9 +115,27 @@ const clearTerminal = () => {
   ]
 }
 
+const startInterval = () => {
+  intervalId = setInterval(() => {
+    clearTerminal()
+  }, moment.duration(8, 'hours').asMilliseconds())
+}
+
+const stopInterval = () => {
+  clearInterval(intervalId)
+}
+
+const currentDate = ref(moment())
+
+let intervalId
+
 onMounted(() => {
-  TerminalService.on('command', commandHandler)
+  startInterval()
   console.log(ipcRenderer)
+})
+
+onBeforeUnmount(() => {
+  stopInterval()
 })
 </script>
 

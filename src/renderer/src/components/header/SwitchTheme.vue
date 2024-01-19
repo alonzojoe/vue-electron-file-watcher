@@ -30,8 +30,6 @@ watch(() => {
 
 const deviceTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 
-console.log('window current:', deviceTheme)
-
 const changeTheme = () => {
   currentTheme.value = currentTheme.value == 'dark' ? 'light' : 'dark'
 }
