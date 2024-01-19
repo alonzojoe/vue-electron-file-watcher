@@ -12,6 +12,10 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
 
+const particlesLoaded = async (container) => {
+  console.log('Particles container loaded', container)
+}
+
 const toast = useToast()
 const confirm = useConfirm()
 
@@ -127,6 +131,81 @@ onMounted(() => {
 
 <template>
   <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
+  <vue-particles
+    id="tsparticles"
+    :particlesLoaded="particlesLoaded"
+    url="http://foo.bar/particles.json"
+  />
+  <vue-particles
+    id="tsparticles"
+    :particlesLoaded="particlesLoaded"
+    :options="{
+      fpsLimit: 120,
+      interactivity: {
+        events: {
+          onClick: {
+            enable: true,
+            mode: 'push'
+          },
+          onHover: {
+            enable: false,
+            mode: 'repulse'
+          }
+        },
+        modes: {
+          bubble: {
+            distance: 300,
+            duration: 2,
+            opacity: 0.8,
+            size: 15
+          },
+          push: {
+            quantity: 4
+          },
+          repulse: {
+            distance: 100,
+            duration: 0.4
+          }
+        }
+      },
+      particles: {
+        color: {
+          value: '#ffffff'
+        },
+        links: {
+          color: '#ffffff',
+          distance: 100,
+          enable: true,
+          opacity: 0.5,
+          width: 1
+        },
+        move: {
+          direction: 'none',
+          enable: true,
+          outModes: 'bounce',
+          random: false,
+          speed: 6,
+          straight: false
+        },
+        number: {
+          density: {
+            enable: true
+          },
+          value: 50
+        },
+        opacity: {
+          value: 0.5
+        },
+        shape: {
+          type: 'circle'
+        },
+        size: {
+          value: { min: 1, max: 5 }
+        }
+      },
+      detectRetina: true
+    }"
+  />
   <div class="grid fadein animation-duration-1000" v-show="mainMenu">
     <Toast />
     <ConfirmDialog group="positioned"></ConfirmDialog>
@@ -137,9 +216,15 @@ onMounted(() => {
       </div>
     </div>
     <div class="col-12">
-      <div class="flex justify-content-center">
+      <div class="flex justify-content-between">
+        <div>
+          <Header class="opacity-0" />
+        </div>
         <div>
           <Header />
+        </div>
+        <div>
+          <Header class="opacity-0" />
         </div>
       </div>
       <div class="flex justify-content-center">
@@ -174,7 +259,7 @@ onMounted(() => {
         ></i
         ><span>
           {{ !started ? 'File Watcher is currently stopped' : 'File Watcher is running' }}</span
-        ><i class="pi pi-cloud-upload" style="font-size: 1rem"></i>
+        ><i class="pi pi-cloud-upload" style="font-size: 1rem" v-if="started"></i>
       </div>
       <div class="terminal-container bg-gray-900 text-white border-round py-3 px-3 text-gray-400">
         <p class="my-0 text-sm" id="myDiv">
