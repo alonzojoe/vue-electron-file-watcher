@@ -4,7 +4,7 @@ const { ipcRenderer } = window.electron
 import Welcome from '@renderer/components/starter/Welcome.vue'
 import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
-import Cmd from '@renderer/components/cmd/Cmd.vue'
+import Terminal from '@renderer/components/cmd/Terminal.vue'
 import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import TerminalService from 'primevue/terminalservice'
 import Button from 'primevue/button'
@@ -88,7 +88,12 @@ const confirmStop = () => {
   })
 }
 
-const terminalMessages = ref([])
+const terminalMessages = ref([
+  {
+    color: 'fc-white',
+    text: 'Welcome to RIS File Watcher'
+  }
+])
 
 ipcRenderer.on('data-to-vue', (event, data) => {
   console.log('data received in vue component', data)
@@ -119,6 +124,15 @@ const showMain = (event) => {
 const currentTheme = ref('')
 const getTheme = (theme) => {
   currentTheme.value = theme
+}
+
+const clearTerminal = () => {
+  terminalMessages.value = [
+    {
+      color: 'fc-white',
+      text: 'The terminal was cleared.'
+    }
+  ]
 }
 
 onMounted(() => {
@@ -214,15 +228,9 @@ onMounted(() => {
       </div>
     </div>
     <div class="col-12">
-      <div class="flex justify-content-between">
-        <div>
-          <Header class="opacity-0" />
-        </div>
+      <div class="flex justify-content-center">
         <div>
           <Header />
-        </div>
-        <div>
-          <Header class="opacity-0" />
         </div>
       </div>
       <div class="flex justify-content-center">
@@ -249,17 +257,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="col-12 mt-0">
-      <div class="flex align-items-center justify-content-start gap-2 px-4 mb-2 mt-0">
-        <i
-          class="pi text-xs"
-          :class="!started ? 'pi-circle-fill' : 'pi-spin pi-spinner'"
-          style="font-size: 1rem"
-        ></i
-        ><span>
-          {{ !started ? 'File Watcher is currently stopped' : 'File Watcher is running' }}</span
-        ><i class="pi pi-cloud-upload" style="font-size: 1rem" v-if="started"></i>
-      </div>
-      <Cmd :messages="terminalMessages" />
+      <Terminal :messages="terminalMessages" :started="started" @clear-terminal="clearTerminal()" />
     </div>
     <div class="col-12">
       <div class="flex justify-content-end px-4">
