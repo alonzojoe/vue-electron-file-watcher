@@ -5,18 +5,15 @@ import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
 import Terminal from '@renderer/components/cmd/Terminal.vue'
 import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
-import TerminalService from 'primevue/terminalservice'
+import Particles from '@renderer/components/particles/Particles.vue'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
+import Image from 'primevue/image'
 import moment from 'moment'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
 const { ipcRenderer } = window.electron
-
-const particlesLoaded = async (container) => {
-  console.log('Particles container loaded', container)
-}
 
 const toast = useToast()
 const confirm = useConfirm()
@@ -115,6 +112,8 @@ const clearTerminal = () => {
   ]
 }
 
+let intervalId
+
 const startInterval = () => {
   intervalId = setInterval(() => {
     clearTerminal()
@@ -125,10 +124,6 @@ const stopInterval = () => {
   clearInterval(intervalId)
 }
 
-const currentDate = ref(moment())
-
-let intervalId
-
 onMounted(() => {
   startInterval()
   console.log(ipcRenderer)
@@ -137,86 +132,18 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopInterval()
 })
+
+import icon from '../../../resources/vite.svg'
 </script>
 
 <template>
+  <Particles />
   <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
-  <vue-particles
-    id="tsparticles"
-    :particlesLoaded="particlesLoaded"
-    url="http://foo.bar/particles.json"
-  />
-  <vue-particles
-    id="tsparticles"
-    :particlesLoaded="particlesLoaded"
-    :options="{
-      fpsLimit: 120,
-      interactivity: {
-        events: {
-          onClick: {
-            enable: false,
-            mode: 'push'
-          },
-          onHover: {
-            enable: false,
-            mode: 'repulse'
-          }
-        },
-        modes: {
-          bubble: {
-            distance: 300,
-            duration: 2,
-            opacity: 0.8,
-            size: 15
-          },
-          push: {
-            quantity: 4
-          },
-          repulse: {
-            distance: 100,
-            duration: 0.4
-          }
-        }
-      },
-      particles: {
-        color: {
-          value: '#6c757d'
-        },
-        links: {
-          color: '#6c757d',
-          distance: 100,
-          enable: true,
-          opacity: 0.5,
-          width: 1
-        },
-        move: {
-          direction: 'none',
-          enable: true,
-          outModes: 'bounce',
-          random: false,
-          speed: 6,
-          straight: false
-        },
-        number: {
-          density: {
-            enable: true
-          },
-          value: 50
-        },
-        opacity: {
-          value: 0.5
-        },
-        shape: {
-          type: 'circle'
-        },
-        size: {
-          value: { min: 1, max: 5 }
-        }
-      },
-      detectRetina: true
-    }"
-  />
-  <div class="grid fadein animation-duration-1000" v-show="mainMenu">
+  <div class="grid fadein animation-duration-1000 relative" v-show="mainMenu">
+    <div class="icon-container">
+      <img class="vue-icon" height="35px" width="35px" :src="icon" alt="" />
+    </div>
+
     <Toast />
     <ConfirmDialog group="positioned"></ConfirmDialog>
     <div class="col-12">
@@ -260,7 +187,8 @@ onBeforeUnmount(() => {
     <div class="col-12">
       <div class="flex justify-content-end px-4">
         <span class="text-xs"
-          >RIS File Watcher v.1.0 @build Electron v28.1.2 @Joenell Alonzo (Software Engineer)</span
+          >RIS File Watcher v.1.0.0 @build Electron v28.1.2 @Joenell Alonzo (Software
+          Engineer)</span
         >
       </div>
     </div>
@@ -342,5 +270,54 @@ element.style {
 
 .p-confirm-dialog-message {
   font-size: 0.7rem;
+}
+
+.icon-container {
+  position: absolute;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  top: 20%;
+  right: 70%;
+  transform: translate(-50%, -50%);
+  width: 45px;
+  height: 45px;
+  background: rgba(186, 188, 194, 0.5);
+  border-radius: 50%;
+  opacity: 1;
+  animation:
+    bounce 5s infinite,
+    glow 3s infinite;
+}
+
+.icon-container .vue-icon {
+  padding: 3px;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-12px);
+  }
+  60% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(200, 200, 200, 0.7); /* Light gray glow with 0.7 opacity */
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(200, 200, 200, 0.2); /* Increase glow size and reduce opacity */
+  }
 }
 </style>

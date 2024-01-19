@@ -12,7 +12,7 @@
     <div>
       <Button
         class="p-button-sm"
-        label="Clear"
+        label="Clear Terminal"
         severity="danger"
         @click="$emit('clear-terminal')"
         :pt="{
