@@ -4,6 +4,7 @@ const { ipcRenderer } = window.electron
 import Welcome from '@renderer/components/starter/Welcome.vue'
 import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
+import Cmd from '@renderer/components/cmd/Cmd.vue'
 import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import TerminalService from 'primevue/terminalservice'
 import Button from 'primevue/button'
@@ -110,17 +111,14 @@ const scrollToBottom = () => {
   })
 }
 
-const scrollToTop = () => {
-  const div = document.getElementById('myDiv')
-  div.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  })
-}
-
 const mainMenu = ref(false)
 const showMain = (event) => {
   mainMenu.value = true
+}
+
+const currentTheme = ref('')
+const getTheme = (theme) => {
+  currentTheme.value = theme
 }
 
 onMounted(() => {
@@ -144,7 +142,7 @@ onMounted(() => {
       interactivity: {
         events: {
           onClick: {
-            enable: true,
+            enable: false,
             mode: 'push'
           },
           onHover: {
@@ -170,10 +168,10 @@ onMounted(() => {
       },
       particles: {
         color: {
-          value: '#ffffff'
+          value: '#6c757d'
         },
         links: {
-          color: '#ffffff',
+          color: '#6c757d',
           distance: 100,
           enable: true,
           opacity: 0.5,
@@ -211,7 +209,7 @@ onMounted(() => {
     <ConfirmDialog group="positioned"></ConfirmDialog>
     <div class="col-12">
       <div class="flex justify-content-between align-items-center gap-2 px-2">
-        <SwitchTheme :started="started" />
+        <SwitchTheme @current-theme="getTheme" :started="started" />
         <Status :started="started" />
       </div>
     </div>
@@ -261,14 +259,7 @@ onMounted(() => {
           {{ !started ? 'File Watcher is currently stopped' : 'File Watcher is running' }}</span
         ><i class="pi pi-cloud-upload" style="font-size: 1rem" v-if="started"></i>
       </div>
-      <div class="terminal-container bg-gray-900 text-white border-round py-3 px-3 text-gray-400">
-        <p class="my-0 text-sm" id="myDiv">
-          <span>🚀 $ Welcome to RIS File Watcher <br /></span>
-          <span v-for="(t, index) in terminalMessages" :key="index" :class="`${t.color}`"
-            >🚀 $ {{ t.text }} <br
-          /></span>
-        </p>
-      </div>
+      <Cmd :messages="terminalMessages" />
     </div>
     <div class="col-12">
       <div class="flex justify-content-end px-4">

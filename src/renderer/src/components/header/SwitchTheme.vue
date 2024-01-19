@@ -19,6 +19,9 @@ import Button from 'primevue/button'
 const props = defineProps({
   started: Boolean
 })
+
+const emit = defineEmits(['current-theme'])
+
 const bool = ref()
 watch(() => {
   props.started
@@ -63,16 +66,20 @@ const toggleChangeTheme = async () => {
   body.classList.add('fade-effect', 'fade-out')
   if (currentTheme.value == 'dark') {
     addDarkTheme()
+    emit('current-theme', 'dark')
   } else {
     removeDarkTheme()
+    emit('current-theme', 'light')
   }
 }
 
 const mountedTheme = (theme) => {
   if (theme == 'dark') {
     addDarkTheme()
+    emit('current-theme', 'dark')
   } else {
     removeDarkTheme()
+    emit('current-theme', 'light')
   }
 }
 
