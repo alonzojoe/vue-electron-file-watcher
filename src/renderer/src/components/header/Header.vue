@@ -7,4 +7,4 @@ import Image from 'primevue/image'
 import icon from '../../../../../resources/electron.png'
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>
