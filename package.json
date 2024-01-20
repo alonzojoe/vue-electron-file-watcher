@@ -2,7 +2,7 @@
   "name": "ris-file-watcher",
   "productName": "RIS_FIleWatcher",
   "version": "1.0.0",
-  "description": "A File Watcher that transfer results from orders folder to destination folder.",
+  "description": "A File Watcher that transfer results from orders folder, calls api to update data and transfer to destination folder.",
   "main": "./out/main/index.js",
   "author": "example.com",
   "homepage": "https://electron-vite.org",

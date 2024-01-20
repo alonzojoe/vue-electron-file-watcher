@@ -8,11 +8,14 @@ import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import Particles from '@renderer/components/particles/Particles.vue'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
-import Image from 'primevue/image'
 import moment from 'moment'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
+import viteIcon from '../../../resources/vite.png'
+import vueIcon from '../../../resources/vue.png'
+import electronIcon from '../../../resources/icon.png'
+
 const { ipcRenderer } = window.electron
 
 const toast = useToast()
@@ -132,10 +135,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   stopInterval()
 })
-
-import viteIcon from '../../../resources/vite.svg'
-import vueIcon from '../../../resources/vue.svg'
-import electronIcon from '../../../resources/icon.png'
 </script>
 
 <template>
