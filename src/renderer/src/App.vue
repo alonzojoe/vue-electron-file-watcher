@@ -133,17 +133,24 @@ onBeforeUnmount(() => {
   stopInterval()
 })
 
-import icon from '../../../resources/vite.svg'
+import viteIcon from '../../../resources/vite.svg'
+import vueIcon from '../../../resources/vue.svg'
+import electronIcon from '../../../resources/icon.png'
 </script>
 
 <template>
   <Particles />
   <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
   <div class="grid fadein animation-duration-1000 relative" v-show="mainMenu">
-    <div class="icon-container">
-      <img class="vue-icon" height="35px" width="35px" :src="icon" alt="" />
+    <div class="icon-container vite">
+      <img class="img-icon" height="35px" width="35px" :src="viteIcon" alt="" />
     </div>
-
+    <div class="icon-container vue">
+      <img class="img-icon" height="35px" width="35px" :src="vueIcon" alt="" />
+    </div>
+    <div class="icon-container electron">
+      <img class="img-icon" height="35px" width="35px" :src="electronIcon" alt="" />
+    </div>
     <Toast />
     <ConfirmDialog group="positioned"></ConfirmDialog>
     <div class="col-12">
@@ -273,14 +280,10 @@ element.style {
 }
 
 .icon-container {
-  position: absolute;
   display: flex;
   text-align: center;
   align-items: center;
   justify-content: center;
-  top: 20%;
-  right: 70%;
-  transform: translate(-50%, -50%);
   width: 45px;
   height: 45px;
   background: rgba(186, 188, 194, 0.5);
@@ -291,7 +294,28 @@ element.style {
     glow 3s infinite;
 }
 
-.icon-container .vue-icon {
+.icon-container.vite {
+  position: absolute;
+  top: 10%;
+  right: 70%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-container.vue {
+  position: absolute;
+  top: 16%;
+  right: 90%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-container.electron {
+  position: absolute;
+  top: 30%;
+  right: 78%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-container .img-icon {
   padding: 3px;
 }
 
