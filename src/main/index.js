@@ -129,6 +129,7 @@ function startFileWatcher() {
           setTimeout(() => tryMoveFile(filePath), 10000)
         } else {
           console.error(`Error copying ${fileName}: ${err.message}`)
+          // Handle the error or log additional information.
         }
       } else {
         console.log(`Copied ${fileName} to ${destinationPath}`)
@@ -178,15 +179,25 @@ function startFileWatcher() {
   watcher.on('add', (filePath) => {
     const fileExtension = path.extname(filePath).toLowerCase()
     if (fileExtension === '.pdf' && !isProcessing) {
-      isProcessing = true // Set flag to true, indicating a file is being processed
-      watcherQueue.push(filePath) // Add file to the queue
-
-      // Process the first file in the queue
-      tryMoveFile(watcherQueue.shift())
+      // Check if the file still exists
+      if (fs.existsSync(filePath)) {
+        isProcessing = true
+        watcherQueue.push(filePath)
+        tryMoveFile(watcherQueue.shift())
+      } else {
+        console.error(`File does not exist: ${filePath}`)
+      }
     } else if (fileExtension === '.pdf') {
-      // If isProcessing is true, add file to the queue
-      watcherQueue.push(filePath)
+      if (fs.existsSync(filePath)) {
+        watcherQueue.push(filePath)
+      } else {
+        console.error(`File does not exist: ${filePath}`)
+      }
     }
+  })
+
+  watcher.on('unlink', (filePath) => {
+    console.error(`File deleted before processing: ${filePath}`)
   })
 
   watcher.on('error', (error) => {

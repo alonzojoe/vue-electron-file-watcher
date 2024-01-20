@@ -12,6 +12,7 @@ import './assets/css/style.css'
 import store from './store'
 
 const app = createApp(App)
+
 app.use(PrimeVue)
 app.use(ToastService)
 app.use(ConfirmationService)
