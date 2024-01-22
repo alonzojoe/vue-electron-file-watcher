@@ -12,6 +12,7 @@ import moment from 'moment'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
+import laravelIcon from '../../../resources/laravel.png'
 import viteIcon from '../../../resources/vite.png'
 import vueIcon from '../../../resources/vue.png'
 import electronIcon from '../../../resources/icon.png'
@@ -143,6 +144,9 @@ onBeforeUnmount(() => {
   <div class="grid fadein animation-duration-1000 relative" v-show="mainMenu">
     <div class="icon-container vite">
       <img class="img-icon" height="35px" width="35px" :src="viteIcon" alt="" />
+    </div>
+    <div class="icon-container laravel">
+      <img class="img-icon" height="35px" width="35px" :src="laravelIcon" alt="" />
     </div>
     <div class="icon-container vue">
       <img class="img-icon" height="35px" width="35px" :src="vueIcon" alt="" />
@@ -295,8 +299,15 @@ element.style {
 
 .icon-container.vite {
   position: absolute;
-  top: 10%;
-  right: 70%;
+  top: 5%;
+  right: 78%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-container.laravel {
+  position: absolute;
+  top: 18.5%;
+  right: 68%;
   transform: translate(-50%, -50%);
 }
 
@@ -310,7 +321,7 @@ element.style {
 .icon-container.electron {
   position: absolute;
   top: 30%;
-  right: 78%;
+  right: 80%;
   transform: translate(-50%, -50%);
 }
 
@@ -337,10 +348,10 @@ element.style {
 @keyframes glow {
   0%,
   100% {
-    box-shadow: 0 0 10px rgba(200, 200, 200, 0.7); /* Light gray glow with 0.7 opacity */
+    box-shadow: 0 0 10px rgba(200, 200, 200, 0.7);
   }
   50% {
-    box-shadow: 0 0 40px rgba(200, 200, 200, 0.2); /* Increase glow size and reduce opacity */
+    box-shadow: 0 0 40px rgba(200, 200, 200, 0.2);
   }
 }
 </style>
