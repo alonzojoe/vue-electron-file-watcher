@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, contextBridge, ipcMain } from 'electron'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { extractRenderDetailID, updatePath, finalizeDocPath } from './service'
+import { extractRenderDetailID, updatePath, finalizeDocPath, checkApi } from './service'
 import { join, basename } from 'path'
 import chokidar from 'chokidar'
 import fs from 'fs'
@@ -151,6 +151,7 @@ function startFileWatcher() {
               ID: extractRenderDetailIDResult,
               DocumentPath: finalizeDocPath(destinationPath)
             })
+            checkApi()
 
             setTerminal('fc-green', uploadedResult)
             toastToVue(uploadedResult)

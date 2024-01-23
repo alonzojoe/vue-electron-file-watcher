@@ -48,3 +48,16 @@ export async function updatePath(payload) {
 
   return result
 }
+
+export async function checkApi() {
+  let results
+  try {
+    const response = await axios.get('http://192.163.8.244:70/api/checkAPI')
+    results = response.data.data
+  } catch (error) {
+    results = error.response.statusText
+  }
+  console.log('electron console', results)
+  return results
+}
+
