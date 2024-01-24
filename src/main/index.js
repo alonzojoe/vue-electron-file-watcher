@@ -151,10 +151,14 @@ function startFileWatcher() {
               ID: extractRenderDetailIDResult,
               DocumentPath: finalizeDocPath(destinationPath)
             })
-            checkApi()
 
             setTerminal('fc-green', uploadedResult)
             toastToVue(uploadedResult)
+            const apiChecker = await checkApi()
+
+            if (apiChecker == true) {
+              stopFileWatcher()
+            }
 
             // Continue to the next file after a 30-second delay
             setTimeout(processNextFile, 30000)
