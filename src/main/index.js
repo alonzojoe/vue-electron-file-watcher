@@ -53,6 +53,10 @@ function toastToVue(data) {
   mainWindow.webContents.send('toast-to-vue', data)
 }
 
+function apiToVue() {
+  mainWindow.webContents.send('api-not-found', true)
+}
+
 function setTerminal(color, result) {
   sendDataToVue({
     color: color,
@@ -158,6 +162,7 @@ function startFileWatcher() {
 
             if (apiChecker == true) {
               stopFileWatcher()
+              apiToVue()
               return
             }
 

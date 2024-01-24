@@ -8,6 +8,7 @@ import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import Particles from '@renderer/components/particles/Particles.vue'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
+import Dialog from 'primevue/dialog'
 import moment from 'moment'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useToast } from 'primevue/usetoast'
@@ -16,6 +17,7 @@ import laravelIcon from '../../../resources/laravel.png'
 import viteIcon from '../../../resources/vite.png'
 import vueIcon from '../../../resources/vue.png'
 import electronIcon from '../../../resources/icon.png'
+import snapIcon from '../../../resources/snap.png'
 
 const { ipcRenderer } = window.electron
 
@@ -97,6 +99,10 @@ ipcRenderer.on('toast-to-vue', (event, data) => {
   showSuccess(data)
 })
 
+ipcRenderer.on('api-not-found', (event, data) => {
+  visible.value = data
+})
+
 const mainMenu = ref(false)
 const showMain = (event) => {
   mainMenu.value = true
@@ -133,6 +139,8 @@ onMounted(() => {
   console.log(ipcRenderer)
 })
 
+const visible = ref(false)
+
 onBeforeUnmount(() => {
   stopInterval()
 })
@@ -140,6 +148,25 @@ onBeforeUnmount(() => {
 
 <template>
   <Particles />
+  <Dialog
+    v-model:visible="visible"
+    modal
+    :closeOnEscape="false"
+    :close-icon="false"
+    :draggable="false"
+    :style="{ width: '50rem' }"
+    :breakpoints="{ '1199px': '75vw', '575px': '90vw', '900px': '50vw' }"
+  >
+    <div class="flex align-items-center justify-content-center">
+      <img height="150px" width="150px" :src="snapIcon" alt="" />
+    </div>
+    <div class="flex justify-content-center flex-column align-items-center">
+      <p class="text-xl font-medium text-red-500 mb-2">Oops! 404 - API Endpoint Not Found.</p>
+      <p class="text-lg text-center mt-0">
+        Check server configuration and restart the file watcher.
+      </p>
+    </div>
+  </Dialog>
   <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
   <div class="grid fadein animation-duration-1000 relative" v-show="mainMenu">
     <div class="icon-container vite">
@@ -327,6 +354,10 @@ element.style {
 
 .icon-container .img-icon {
   padding: 3px;
+}
+
+.p-dialog-header-icons button {
+  display: none;
 }
 
 @keyframes bounce {
