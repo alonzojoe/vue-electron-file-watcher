@@ -29,8 +29,8 @@ const showSuccess = (data) => {
     severity: 'success',
     summary: 'Message',
     detail: `${data}`,
-    // life: 40000 //40 secs
-    life: 400000000 //40 secs
+    life: 40000 //40 secs
+    // life: 400000000 //40 secs
   })
 }
 const started = ref(false)

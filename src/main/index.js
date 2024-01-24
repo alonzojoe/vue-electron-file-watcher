@@ -95,7 +95,7 @@ function startFileWatcher() {
     const destinationDayPath = join(destinationMonthPath, day)
 
     const destinationPath = join(destinationDayPath, fileName)
-
+    apiChecker = await checkApi()
     if (apiChecker !== true) {
       stopFileWatcher()
       apiToVue()
