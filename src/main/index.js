@@ -158,6 +158,7 @@ function startFileWatcher() {
 
             if (apiChecker == true) {
               stopFileWatcher()
+              return
             }
 
             // Continue to the next file after a 30-second delay
@@ -217,7 +218,6 @@ function stopFileWatcher() {
     sendDataToVue({
       color: 'fc-red',
       text: 'File Watcher Stopped.'
-      // Add other extracted information here if needed
     })
     console.log('File Watcher stopped')
   } else {
