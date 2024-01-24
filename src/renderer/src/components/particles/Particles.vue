@@ -55,7 +55,7 @@
           density: {
             enable: true
           },
-          value: 50
+          value: 70
         },
         opacity: {
           value: 0.5

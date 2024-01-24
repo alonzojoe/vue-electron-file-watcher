@@ -60,4 +60,3 @@ export async function checkApi() {
   console.log('electron console', results)
   return results
 }
-

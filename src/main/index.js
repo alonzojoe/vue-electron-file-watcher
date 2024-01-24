@@ -81,7 +81,7 @@ function startFileWatcher() {
   console.log(`Watching for changes in ${ordersFolder}`)
 
   setTerminal('fc-green', 'File Watcher Started...')
-
+  let apiChecker
   async function tryMoveFile(filePath) {
     const fileName = basename(filePath)
     const fileDate = moment()
@@ -96,6 +96,11 @@ function startFileWatcher() {
 
     const destinationPath = join(destinationDayPath, fileName)
 
+    if (apiChecker !== true) {
+      stopFileWatcher()
+      apiToVue()
+      return
+    }
     // Create Directory if they are not existed
     if (!fs.existsSync(destinationYearPath)) {
       setTerminal('fc-orange', `Checking if folder year ${year} exists`)
@@ -127,6 +132,12 @@ function startFileWatcher() {
 
     fsExtra.copy(filePath, destinationPath, async (err) => {
       if (err) {
+        apiChecker = await checkApi()
+        if (apiChecker !== true) {
+          stopFileWatcher()
+          apiToVue()
+          return
+        }
         if (err.code === 'EBUSY' && retries < maxRetries) {
           console.log(`Retrying (${retries + 1}/${maxRetries})...`)
           retries++
@@ -141,6 +152,12 @@ function startFileWatcher() {
         // Remove the original file
         fsExtra.remove(filePath, async (removeErr) => {
           if (removeErr) {
+            apiChecker = await checkApi()
+            if (apiChecker !== true) {
+              stopFileWatcher()
+              apiToVue()
+              return
+            }
             console.error(`Error removing ${fileName}: ${removeErr.message}`)
           } else {
             console.log(`Removed original file: ${filePath}`)
@@ -149,7 +166,13 @@ function startFileWatcher() {
             const extractRenderDetailIDResult = extractRenderDetailID(fileName)
             console.log('Extracted Information:', destinationPath)
             console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
-
+            //API Checker
+            apiChecker = await checkApi()
+            if (apiChecker !== true) {
+              stopFileWatcher()
+              apiToVue()
+              return
+            }
             // API Call
             const uploadedResult = await updatePath({
               ID: extractRenderDetailIDResult,
@@ -158,13 +181,6 @@ function startFileWatcher() {
 
             setTerminal('fc-green', uploadedResult)
             toastToVue(uploadedResult)
-            const apiChecker = await checkApi()
-
-            if (apiChecker == true) {
-              stopFileWatcher()
-              apiToVue()
-              return
-            }
 
             // Continue to the next file after a 30-second delay
             setTimeout(processNextFile, 30000)
