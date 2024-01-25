@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, contextBridge, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, contextBridge, ipcMain, nativeImage } from 'electron'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { extractRenderDetailID, updatePath, finalizeDocPath, checkApi } from './service'
 import { join, basename } from 'path'
@@ -7,8 +7,7 @@ import fs from 'fs'
 import fsExtra from 'fs-extra'
 import moment from 'moment/moment'
 import path from 'path'
-import icon from '../../resources/file-watcher.png?asset'
-import appIcon from '../../resources/file-watcher-sm.png'
+import icon from '../../resources/electron.png?asset'
 
 let watcher
 let mainWindow
@@ -25,7 +24,8 @@ function createWindow() {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
-    }
+    },
+    icon: path.join(__dirname, '../../resources/icon-new.ico')
   })
   // mainWindow.webContents.openDevTools()
   mainWindow.on('ready-to-show', () => {
@@ -36,6 +36,24 @@ function createWindow() {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
+
+  mainWindow.setThumbarButtons([
+    {
+      tooltip: 'button1',
+      icon: nativeImage.createFromPath(path.join(__dirname, '../../resources/icon.png')),
+      click() {
+        console.log('button1 clicked')
+      }
+    },
+    {
+      tooltip: 'button2',
+      icon: nativeImage.createFromPath(path.join(__dirname, '../../resources/icon.png')),
+      flags: ['enabled', 'dismissonclick'],
+      click() {
+        console.log('button2 clicked.')
+      }
+    }
+  ])
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.

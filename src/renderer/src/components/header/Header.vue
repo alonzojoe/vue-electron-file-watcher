@@ -4,7 +4,7 @@
 
 <script setup>
 import Image from 'primevue/image'
-import icon from '../../../../../resources/file-watcher.png'
+import icon from '../../../../../resources/electron.png'
 </script>
 
 <style scoped></style>
