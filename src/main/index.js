@@ -7,7 +7,8 @@ import fs from 'fs'
 import fsExtra from 'fs-extra'
 import moment from 'moment/moment'
 import path from 'path'
-import icon from '../../resources/icon.png?asset'
+import icon from '../../resources/file-watcher.png?asset'
+import appIcon from '../../resources/file-watcher-sm.png'
 
 let watcher
 let mainWindow
