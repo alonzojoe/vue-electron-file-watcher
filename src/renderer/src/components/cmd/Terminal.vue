@@ -24,7 +24,7 @@
   <div class="terminal-container bg-gray-900 text-white border-round py-3 px-3 text-gray-400">
     <p class="my-0 text-sm" id="terminal-content">
       <span v-for="(m, index) in messages" :key="index" :class="`${m.color}`"
-        >🚀 $ {{ m.text }} <br
+        >{{ m.timestamp }} 🚀 $ {{ m.text }} <br
       /></span>
     </p>
   </div>

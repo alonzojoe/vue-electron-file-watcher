@@ -58,7 +58,9 @@ function apiToVue() {
 }
 
 function setTerminal(color, result) {
+  const formattedDateTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
   sendDataToVue({
+    timestamp: formattedDateTime,
     color: color,
     text: result
   })
@@ -233,10 +235,12 @@ function startFileWatcher() {
 }
 
 function stopFileWatcher() {
+  const formattedDateTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
   if (watcher) {
     watcher.close()
     watcher = null
     sendDataToVue({
+      timestamp: formattedDateTime,
       color: 'fc-red',
       text: 'File Watcher Stopped.'
     })

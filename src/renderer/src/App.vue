@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref, computed, watch, onUnmounted } from 'vue'
+import { onMounted, onBeforeUnmount, ref, computed, watch, onUnmounted, watchEffect } from 'vue'
 import Welcome from '@renderer/components/starter/Welcome.vue'
 import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
@@ -20,6 +20,8 @@ import electronIcon from '../../../resources/icon.png'
 import snapIcon from '../../../resources/snap.png'
 
 const { ipcRenderer } = window.electron
+
+const formattedDate = ref(moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
 const toast = useToast()
 const confirm = useConfirm()
@@ -84,6 +86,7 @@ const confirmStop = () => {
 
 const terminalMessages = ref([
   {
+    timestamp: formattedDate.value,
     color: 'fc-white',
     text: 'Welcome to RIS File Watcher'
   }
@@ -117,6 +120,7 @@ const getTheme = (theme) => {
 const clearTerminal = () => {
   terminalMessages.value = [
     {
+      timestamp: formattedDate.value,
       color: 'fc-white',
       text: 'The terminal was cleared.'
     }
@@ -225,8 +229,8 @@ onBeforeUnmount(() => {
     <div class="col-12">
       <div class="flex justify-content-end px-4">
         <span class="text-xs"
-          >RIS File Watcher v.1.0.0 @build Electron v28.1.2 @Joenell Alonzo (Software
-          Engineer)</span
+          >RIS File Watcher v.1.0.0 @build Electron v28.1.2 @Joenell Alonzo (Software Engineer)
+          {{ formattedDate }}</span
         >
       </div>
     </div>
