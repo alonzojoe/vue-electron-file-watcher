@@ -105,7 +105,7 @@ $angle: 30deg;
   vertical-align: middle;
   width: 150px;
   height: 150px;
-  border: 2px solid;
+  border: 5px solid;
   border-radius: 100%;
   text-align: center;
   font-size: 14px;

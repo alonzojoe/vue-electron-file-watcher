@@ -413,7 +413,9 @@ element.style {
   right: 4%;
   transform: rotate(-20deg);
 }
-#app {
-  overflow: hidden;
+
+body {
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 </style>
