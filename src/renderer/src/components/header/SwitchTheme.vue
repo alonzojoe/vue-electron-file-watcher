@@ -5,7 +5,7 @@
       rounded
       aria-label="Filter"
       :pt="{
-        root: { class: 'h-2rem w-2rem' }
+        root: { class: 'h-2rem w-2rem z-5 relative' }
       }"
       @click="toggleChangeTheme"
     />

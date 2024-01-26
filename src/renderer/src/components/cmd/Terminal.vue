@@ -7,7 +7,7 @@
         style="font-size: 1rem"
       ></i
       ><span> {{ !started ? 'File Watcher is currently stopped' : 'File Watcher is running' }}</span
-      ><i class="pi pi-cloud-upload" style="font-size: 1rem" v-if="started"></i>
+      ><i class="pi" :class="!started ? 'pi-eye-slash' : 'pi-eye'" style="font-size: 1rem"></i>
     </div>
     <div>
       <Button

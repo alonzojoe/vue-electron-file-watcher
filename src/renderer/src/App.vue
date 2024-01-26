@@ -20,6 +20,8 @@ import vueIcon from '../../../resources/vue.png'
 import electronIcon from '../../../resources/icon--2.png'
 import snapIcon from '../../../resources/snap.png'
 import flowProcess from '../../../resources/flow.png'
+import fileIcon from '../../../resources/file.png'
+import fileIconSlashed from '../../../resources/file-slash.png'
 
 const { ipcRenderer } = window.electron
 
@@ -33,8 +35,7 @@ const showSuccess = (data) => {
     severity: 'success',
     summary: 'Message',
     detail: `${data}`,
-    life: 40000 //40 secs
-    // life: 400000000 //40 secs
+    life: 50000 //50 secs
   })
 }
 const started = ref(false)
@@ -150,6 +151,10 @@ const visible = ref(false)
 
 const myDate = moment().format('LT')
 
+const eyedIcon = computed(() => {
+  return !started.value ? fileIconSlashed : fileIcon
+})
+
 onBeforeUnmount(() => {
   stopInterval()
 })
@@ -206,7 +211,7 @@ onBeforeUnmount(() => {
       <div class="flex justify-content-center">
         <div>
           <!-- <Header /> -->
-          <AnalogClock :bg="'#2B2E3A'" :color="'#9FEAF9'" :size="'180px'" />
+          <AnalogClock :bg="'#2B2E3A'" :color="'#9FEAF9'" :size="'180px'" :icon="eyedIcon" />
         </div>
       </div>
       <div class="flex justify-content-center">
@@ -402,10 +407,11 @@ element.style {
 
 .flow-process {
   position: absolute;
-  opacity: 0.2;
-  top: 50%;
-  right: 5%;
-  /* transform: rotate(-20deg); */
+  pointer-events: none;
+  opacity: 0.1;
+  top: 24%;
+  right: 4%;
+  transform: rotate(-20deg);
 }
 #app {
   overflow: hidden;

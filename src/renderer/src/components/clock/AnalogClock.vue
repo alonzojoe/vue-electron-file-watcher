@@ -1,5 +1,6 @@
 <template>
   <div class="clock" :style="clockStyle">
+    <img class="file-icon" :src="props.icon" height="80px" width="100px" alt="file-icon" />
     <div class="clock-circle"></div>
     <div class="clock-hour" :style="{ transform: hourRotate }"></div>
     <div class="clock-minute" :style="{ transform: minuteRotate }"></div>
@@ -16,7 +17,7 @@
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 
 export default {
-  props: ['time', 'color', 'border', 'bg', 'size'],
+  props: ['time', 'color', 'border', 'bg', 'size', 'icon'],
   setup(props) {
     const timeList = ref([12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     const transform = ref('scale(1)')
@@ -88,7 +89,8 @@ export default {
       hourRotate,
       minuteRotate,
       secondRotate,
-      clockStyle
+      clockStyle,
+      props
     }
   }
 }
@@ -108,6 +110,13 @@ $angle: 30deg;
   text-align: center;
   font-size: 14px;
 
+  .file-icon {
+    position: absolute;
+    top: 43.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.23;
+  }
   .hour {
     position: absolute;
     top: 0px;
@@ -149,7 +158,7 @@ $angle: 30deg;
     transform: translate(-50%, -50%);
     border: 2px solid #666666;
     border-radius: 100%;
-    background-color: #ffffff;
+    background-color: #9feaf9;
     z-index: 1;
     box-sizing: border-box;
 
