@@ -6,6 +6,7 @@ import Status from '@renderer/components/header/Status.vue'
 import Terminal from '@renderer/components/cmd/Terminal.vue'
 import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import Particles from '@renderer/components/particles/Particles.vue'
+import AnalogClock from '@renderer/components/clock/AnalogClock.vue'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
 import Dialog from 'primevue/dialog'
@@ -16,8 +17,9 @@ import { useConfirm } from 'primevue/useconfirm'
 import laravelIcon from '../../../resources/laravel.png'
 import viteIcon from '../../../resources/vite.png'
 import vueIcon from '../../../resources/vue.png'
-import electronIcon from '../../../resources/icon.png'
+import electronIcon from '../../../resources/icon--2.png'
 import snapIcon from '../../../resources/snap.png'
+import flowProcess from '../../../resources/flow.png'
 
 const { ipcRenderer } = window.electron
 
@@ -146,6 +148,8 @@ onMounted(() => {
 
 const visible = ref(false)
 
+const myDate = moment().format('LT')
+
 onBeforeUnmount(() => {
   stopInterval()
 })
@@ -186,6 +190,10 @@ onBeforeUnmount(() => {
     <div class="icon-container electron">
       <img class="img-icon" height="35px" width="35px" :src="electronIcon" alt="" />
     </div>
+    <div class="flow-process">
+      <img :src="flowProcess" alt="flow-process" />
+    </div>
+
     <Toast />
     <ConfirmDialog group="positioned"></ConfirmDialog>
     <div class="col-12">
@@ -197,7 +205,8 @@ onBeforeUnmount(() => {
     <div class="col-12">
       <div class="flex justify-content-center">
         <div>
-          <Header />
+          <!-- <Header /> -->
+          <AnalogClock :bg="'#2B2E3A'" :color="'#9FEAF9'" :size="'180px'" />
         </div>
       </div>
       <div class="flex justify-content-center">
@@ -389,5 +398,16 @@ element.style {
   50% {
     box-shadow: 0 0 40px rgba(200, 200, 200, 0.2);
   }
+}
+
+.flow-process {
+  position: absolute;
+  opacity: 0.2;
+  top: 50%;
+  right: 5%;
+  /* transform: rotate(-20deg); */
+}
+#app {
+  overflow: hidden;
 }
 </style>
