@@ -115,7 +115,7 @@ $angle: 30deg;
     top: 43.5%;
     left: 50%;
     transform: translate(-50%, -50%);
-    opacity: 0.23;
+    opacity: 0.2;
   }
   .hour {
     position: absolute;

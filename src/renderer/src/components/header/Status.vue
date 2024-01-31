@@ -11,6 +11,7 @@ import InputSwitch from 'primevue/inputswitch'
 const props = defineProps({
   started: Boolean
 })
+
 const bool = ref()
 watch(() => {
   props.started
