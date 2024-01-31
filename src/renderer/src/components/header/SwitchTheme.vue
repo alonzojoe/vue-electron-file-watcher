@@ -2,6 +2,12 @@
   <div>
     <Button
       :icon="currentTheme == 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
+      v-tooltip.right="{
+        value: `Change theme`,
+        pt: {
+          text: 'p-2 font-sm'
+        }
+      }"
       rounded
       aria-label="Filter"
       :pt="{
@@ -23,10 +29,12 @@ const props = defineProps({
 const emit = defineEmits(['current-theme'])
 
 const bool = ref()
-watch(() => {
-  props.started
-  bool.value = props.started
-})
+watch(
+  () => props.started,
+  (newValue) => {
+    bool.value = newValue
+  }
+)
 
 const deviceTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 

@@ -13,10 +13,12 @@ const props = defineProps({
 })
 
 const bool = ref()
-watch(() => {
-  props.started
-  bool.value = props.started
-})
+watch(
+  () => props.started,
+  (newValue) => {
+    bool.value = newValue
+  }
+)
 </script>
 
 <style lang="scss" scoped></style>
