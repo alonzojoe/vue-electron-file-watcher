@@ -29,7 +29,7 @@ function createWindow() {
   })
 
   mainWindow.setMenu(null)
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })

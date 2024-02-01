@@ -18,6 +18,12 @@
         :pt="{
           root: { class: 'cst-font-sm' }
         }"
+        v-tooltip.top="{
+          value: `Click to clear the terminal`,
+          pt: {
+            text: 'p-2 font-sm'
+          }
+        }"
       />
     </div>
   </div>

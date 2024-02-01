@@ -125,7 +125,7 @@ const clearTerminal = () => {
     {
       timestamp: formattedDate.value,
       color: 'fc-white',
-      text: 'The terminal was cleared.'
+      text: 'The terminal was automatically cleared.'
     }
   ]
 }
@@ -148,8 +148,6 @@ onMounted(() => {
 })
 
 const visible = ref(false)
-
-const myDate = moment().format('LT')
 
 const eyedIcon = computed(() => {
   return !started.value ? fileIconSlashed : fileIcon
