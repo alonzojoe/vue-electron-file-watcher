@@ -135,7 +135,7 @@ let intervalId
 const startInterval = () => {
   intervalId = setInterval(() => {
     clearTerminal()
-  }, moment.duration(8, 'hours').asMilliseconds())
+  }, moment.duration(4, 'hours').asMilliseconds())
 }
 
 const stopInterval = () => {
