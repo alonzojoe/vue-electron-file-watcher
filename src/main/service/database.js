@@ -1,7 +1,8 @@
 import sqlite3 from 'sqlite3'
 import path from 'path'
 
-const dbPath = path.join(__dirname, 'database', 'database.db')
+const dbPath = path.resolve('src/main/service/database/database.db')
+console.log('dbp ath director', dbPath)
 const db = new sqlite3.Database(dbPath)
 
 db.serialize(() => {
@@ -14,7 +15,5 @@ db.serialize(() => {
     )
   `)
 })
-
-db.close()
 
 export default db
