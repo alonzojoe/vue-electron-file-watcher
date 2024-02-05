@@ -74,7 +74,7 @@
             :pt="{
               root: { class: 'cst-font-sm' }
             }"
-            @click="showSettings()"
+            @click="saveSettings()"
           ></Button>
         </div>
       </div>
@@ -90,12 +90,17 @@ import InputText from 'primevue/inputtext'
 
 const { ipcRenderer } = window.electron
 const visible = ref(false)
+
 const currentSettings = ref({
   id: 1,
   orders_directory: '',
   target_directory: '',
   api_endpoint: ''
 })
+
+const areAllPropertiesEmpty = (obj) => {
+  return Object.values(obj).every((value) => value.trim() === '')
+}
 
 const showSettings = async () => {
   await window.electron.ipcRenderer.invoke('showSettings')
@@ -106,6 +111,11 @@ ipcRenderer.on('settings-to-vue', (event, data) => {
   currentSettings.value = data
   console.log('data received in vue settings component', data)
 })
+
+const saveSettings = async () => {
+  const isValidForm = await areAllPropertiesEmpty(currentSettings.value)
+  console.log(isValidForm)
+}
 </script>
 
 <style lang="scss" scoped>
