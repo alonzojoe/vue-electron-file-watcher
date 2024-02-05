@@ -53,7 +53,7 @@ const scrollToBottom = () => {
 }
 
 watch(props.messages, () => {
-  setTimeout(scrollToBottom, 500)
+  setTimeout(scrollToBottom, 600)
 })
 
 console.log('props message', props.messages)
