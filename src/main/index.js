@@ -8,9 +8,44 @@ import fsExtra from 'fs-extra'
 import moment from 'moment/moment'
 import path from 'path'
 import icon from '../../resources/electron.png?asset'
+import db from './service/database'
 
 let watcher
 let mainWindow
+
+async function sqliteQuery(settings) {
+  await db.run(
+    `
+    INSERT INTO settings (ordersDirectory, targetDirectory, electronApiPath)
+    VALUES (?, ?, ?)
+  `,
+    ['W:', 'Y:', 'http://192.163.8.244:70/api']
+  )
+
+  console.log('Default Settings Inserted')
+
+  // const { ordersDirectory, targetDirectory, electronApiPath } = settings
+
+  // const p = new Promise((resolve, reject) => {
+  //   db.run(
+  //     `
+  //     INSERT INTO settings (ordersDirectory, targetDirectory, electronApiPath)
+  //     VALUES (?, ?, ?)
+  //   `,
+  //     ['W:', 'Y:', 'http://192.163.8.244:70/api'],
+  //     function (err) {
+  //       if (err) {
+  //         reject(err)
+  //       } else {
+  //         resolve({ message: 'Settings inserted successfully' })
+  //       }
+  //     }
+  //   )
+  // })
+
+  // return p
+}
+
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -293,6 +328,7 @@ app.whenReady().then(() => {
   })
 
   createWindow()
+  sqliteQuery()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
