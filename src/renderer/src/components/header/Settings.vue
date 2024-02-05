@@ -13,7 +13,7 @@
       :pt="{
         root: { class: 'h-2rem w-2rem z-5 relative' }
       }"
-      @click="visible = true"
+      @click="showSettings()"
     />
     <Dialog
       v-model:visible="visible"
@@ -57,7 +57,7 @@
             :pt="{
               root: { class: 'cst-font-sm' }
             }"
-            @click="visible = false"
+            @click="showSettings()"
           ></Button>
         </div>
       </div>
@@ -72,8 +72,18 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 
 const { ipcRenderer } = window.electron
-const visible = ref(true)
-const currentSettings = ref({})
+const visible = ref(false)
+const currentSettings = ref({
+  id: 1,
+  ordersDirectory: '',
+  targetDirectory: '',
+  electronApiPath: ''
+})
+
+const showSettings = async () => {
+  await window.electron.ipcRenderer.invoke('showSettings')
+  visible.value = true
+}
 
 ipcRenderer.on('settings-to-vue', (event, data) => {
   //   currentSettings.value = data

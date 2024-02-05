@@ -18,9 +18,9 @@ async function updateSettings(settings) {
   await db.run(
     `
     UPDATE settings 
-    SET ordersDirectory = ?,
-        targetDirectory = ?,
-        electronApiPath = ?
+    SET orders_directory = ?,
+        target_directory = ?,
+        api_endpoint = ?
     WHERE id = 1,`,
     [orders, target, api]
   )
@@ -324,6 +324,10 @@ ipcMain.handle('stopFileWatcher', () => {
 
 ipcMain.handle('saveSettings', (event, settings) => {
   console.log('settings', settings)
+})
+
+ipcMain.handle('showSettings', (event, settings) => {
+  retrieveData()
 })
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
