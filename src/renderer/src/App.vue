@@ -5,6 +5,7 @@ import Header from '@renderer/components/header/Header.vue'
 import Status from '@renderer/components/header/Status.vue'
 import Terminal from '@renderer/components/cmd/Terminal.vue'
 import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
+import Settings from '@renderer/components/header/Settings.vue'
 import Particles from '@renderer/components/particles/Particles.vue'
 import AnalogClock from '@renderer/components/clock/AnalogClock.vue'
 import Button from 'primevue/button'
@@ -65,6 +66,15 @@ const stopWatch = async () => {
   } catch (error) {
     console.log('Error stopping the file watcher', error)
   }
+}
+
+const updateSettings = async () => {
+  const settings = {
+    ordersDirectory: 'W:',
+    targetDirectory: 'Y:',
+    apiPath: 'http://192.163.8.244:70/api'
+  }
+  await window.electron.ipcRenderer.invoke('saveSettings', settings)
 }
 
 const confirmStop = () => {
@@ -199,10 +209,12 @@ onBeforeUnmount(() => {
 
     <Toast />
     <ConfirmDialog group="positioned"></ConfirmDialog>
+    <Button class="btn-control" label="Start" icon="pi pi-play" @click="updateSettings()" />
     <div class="col-12">
       <div class="flex justify-content-between align-items-center gap-2 px-2">
         <SwitchTheme @current-theme="getTheme" :started="started" />
         <Status :started="started" />
+        <Settings />
       </div>
     </div>
     <div class="col-12">

@@ -13,37 +13,30 @@ import db from './service/database'
 let watcher
 let mainWindow
 
-async function sqliteQuery(settings) {
+async function updateSettings(settings) {
+  const { orders, target, api } = settings
   await db.run(
     `
-    INSERT INTO settings (ordersDirectory, targetDirectory, electronApiPath)
-    VALUES (?, ?, ?)
-  `,
-    ['W:', 'Y:', 'http://192.163.8.244:70/api']
+    UPDATE settings 
+    SET ordersDirectory = ?,
+        targetDirectory = ?,
+        electronApiPath = ?
+    WHERE id = 1,`,
+    [orders, target, api]
   )
+}
 
-  console.log('Default Settings Inserted')
-
-  // const { ordersDirectory, targetDirectory, electronApiPath } = settings
-
-  // const p = new Promise((resolve, reject) => {
-  //   db.run(
-  //     `
-  //     INSERT INTO settings (ordersDirectory, targetDirectory, electronApiPath)
-  //     VALUES (?, ?, ?)
-  //   `,
-  //     ['W:', 'Y:', 'http://192.163.8.244:70/api'],
-  //     function (err) {
-  //       if (err) {
-  //         reject(err)
-  //       } else {
-  //         resolve({ message: 'Settings inserted successfully' })
-  //       }
-  //     }
-  //   )
-  // })
-
-  // return p
+async function getSettings() {
+  return new Promise((resolve) => {
+    db.get('SELECT * FROM settings ORDER BY id DESC LIMIT 1', (err, row) => {
+      if (err) {
+        console.error('Error retrieving settings:', err)
+        resolve(null)
+      } else {
+        resolve(row)
+      }
+    })
+  })
 }
 
 function createWindow() {
@@ -64,7 +57,7 @@ function createWindow() {
   })
 
   mainWindow.setMenu(null)
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
@@ -111,6 +104,21 @@ function toastToVue(data) {
 
 function apiToVue() {
   mainWindow.webContents.send('api-not-found', true)
+}
+
+function retrieveData() {
+  getSettings()
+    .then((data) => {
+      console.log('promis retrieved data', data)
+      mainWindow.webContents.send('settings-to-vue', data)
+    })
+    .catch((error) => {
+      console.log('error in sqlite', error)
+    })
+}
+
+function settingsTovue() {
+  mainWindow.webContents.send('settings-to-vue', true)
 }
 
 function setTerminal(color, result) {
@@ -313,6 +321,10 @@ ipcMain.handle('startFileWatcher', () => {
 ipcMain.handle('stopFileWatcher', () => {
   stopFileWatcher()
 })
+
+ipcMain.handle('saveSettings', (event, settings) => {
+  console.log('settings', settings)
+})
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -328,7 +340,7 @@ app.whenReady().then(() => {
   })
 
   createWindow()
-  sqliteQuery()
+  retrieveData()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

@@ -15,7 +15,6 @@
       }"
       @click="toggleChangeTheme"
     />
-    <!-- {{ currentTheme }} -->
   </div>
 </template>
 
