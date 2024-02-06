@@ -22,7 +22,7 @@
       :style="{ width: '50rem' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw', '900px': '50vw' }"
     >
-      <div v-if="!flag">
+      <div v-if="!succed">
         <span class="p-text-secondary block text-sm mb-3">Update Settings</span>
         <div class="px-5">
           <div class="flex align-items-center gap-3 mb-3">
@@ -75,6 +75,7 @@
               type="button"
               label="Apply Changes"
               size="small"
+              :icon="'pi pi-spin pi-spinner'"
               :pt="{
                 root: { class: 'cst-font-sm' }
               }"
@@ -127,6 +128,7 @@ const validateSettings = () => {
 }
 
 const showSettings = async () => {
+  resetStates()
   await window.electron.ipcRenderer.invoke('showSettings')
   visible.value = true
 }
@@ -136,7 +138,13 @@ ipcRenderer.on('settings-to-vue', (event, data) => {
   console.log('data received in vue settings component', data)
 })
 
+const invokeUpdate = async (data) => {
+  const serializedData = JSON.stringify(data)
+  await window.electron.ipcRenderer.invoke('updateSettings', serializedData)
+}
+
 const flag = ref(false)
+const succed = ref(false)
 const saveSettings = async () => {
   flag.value = true
   if (!validateSettings()) {
@@ -150,10 +158,19 @@ const saveSettings = async () => {
     return
   }
   console.log('validated!')
+  await invokeUpdate(currentSettings.value)
+  setTimeout(() => {
+    succed.value = true
+  }, 2000)
+}
+
+const resetStates = () => {
+  succed.value = false
+  flag.value = false
 }
 
 onMounted(() => {
-  flag.value = false
+  resetStates()
 })
 </script>
 

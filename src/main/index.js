@@ -14,15 +14,16 @@ let watcher
 let mainWindow
 
 async function updateSettings(settings) {
-  const { orders, target, api } = settings
+  console.log('update sqlite', settings)
+  const { orders_directory, target_directory, api_endpoint } = settings
   await db.run(
     `
-    UPDATE settings 
+    UPDATE settings
     SET orders_directory = ?,
         target_directory = ?,
         api_endpoint = ?
-    WHERE id = 1,`,
-    [orders, target, api]
+    WHERE id = 1`,
+    [orders_directory, target_directory, api_endpoint]
   )
 }
 
@@ -322,12 +323,18 @@ ipcMain.handle('stopFileWatcher', () => {
   stopFileWatcher()
 })
 
-ipcMain.handle('saveSettings', (event, settings) => {
+ipcMain.handle('saveSettings', (settings) => {
   console.log('settings', settings)
 })
 
 ipcMain.handle('showSettings', (event, settings) => {
   retrieveData()
+})
+
+ipcMain.handle('updateSettings', async (event, serializedData) => {
+  const data = JSON.parse(serializedData)
+  console.log('update settingss', data)
+  await updateSettings(data)
 })
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
