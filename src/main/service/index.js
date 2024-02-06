@@ -37,9 +37,9 @@ export function finalizeDocPath(inputString) {
   }
 }
 
-export async function updatePath(payload) {
+export async function updatePath(payload, endpoint) {
   let result
-  const response = await axios.patch('http://192.163.8.244:70/api/updatePath', {
+  const response = await axios.patch(`${endpoint}/updatePath`, {
     ID: payload.ID,
     DocumentPath: payload.DocumentPath
   })
@@ -49,10 +49,10 @@ export async function updatePath(payload) {
   return result
 }
 
-export async function checkApi() {
+export async function checkApi(endpoint) {
   let results
   try {
-    const response = await axios.get('http://192.163.8.244:70/api/checkAPI')
+    const response = await axios.get(`${endpoint}/checkAPI`)
     results = response.data.data
   } catch (error) {
     results = error.response.statusText

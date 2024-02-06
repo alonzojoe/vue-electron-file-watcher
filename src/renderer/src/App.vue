@@ -37,7 +37,7 @@ const showSuccess = (data) => {
     severity: 'success',
     summary: 'Message',
     detail: `${data}`,
-    life: 50000 //50 secs
+    life: 55000 //50 secs
   })
 }
 const started = ref(false)
@@ -67,15 +67,6 @@ const stopWatch = async () => {
   } catch (error) {
     console.log('Error stopping the file watcher', error)
   }
-}
-
-const updateSettings = async () => {
-  const settings = {
-    ordersDirectory: 'W:',
-    targetDirectory: 'Y:',
-    apiPath: 'http://192.163.8.244:70/api'
-  }
-  await window.electron.ipcRenderer.invoke('saveSettings', settings)
 }
 
 const confirmStop = () => {
@@ -186,7 +177,7 @@ onBeforeUnmount(() => {
     <div class="flex justify-content-center flex-column align-items-center">
       <p class="text-xl font-medium text-red-500 mb-2">Oops! 404 - API Endpoint Not Found.</p>
       <p class="text-lg text-center mt-0">
-        Check server configuration and restart the file watcher.
+        Check API server configuration, file watcher settings and restart the file watcher.
       </p>
     </div>
   </Dialog>

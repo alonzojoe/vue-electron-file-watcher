@@ -134,8 +134,8 @@ function setTerminal(color, result) {
 }
 
 function startFileWatcher() {
-  const ordersFolder = 'Y:\\PDF'
-  const targetFolder = 'W:\\'
+  const ordersFolder = `${systemSettings.orders_directory}\\PDF`
+  const targetFolder = `${systemSettings.target_directory}\\`
 
   if (watcher) {
     console.log('File watcher is already running')
@@ -164,7 +164,7 @@ function startFileWatcher() {
     const destinationDayPath = join(destinationMonthPath, day)
 
     const destinationPath = join(destinationDayPath, fileName)
-    apiChecker = await checkApi()
+    apiChecker = await checkApi(systemSettings.api_endpoint)
     if (apiChecker !== true) {
       stopFileWatcher()
       apiToVue()
@@ -201,7 +201,7 @@ function startFileWatcher() {
 
     fsExtra.copy(filePath, destinationPath, async (err) => {
       if (err) {
-        apiChecker = await checkApi()
+        apiChecker = await checkApi(systemSettings.api_endpoint)
         if (apiChecker !== true) {
           stopFileWatcher()
           apiToVue()
@@ -221,7 +221,7 @@ function startFileWatcher() {
         // Remove the original file
         fsExtra.remove(filePath, async (removeErr) => {
           if (removeErr) {
-            apiChecker = await checkApi()
+            apiChecker = await checkApi(systemSettings.api_endpoint)
             if (apiChecker !== true) {
               stopFileWatcher()
               apiToVue()
@@ -236,17 +236,20 @@ function startFileWatcher() {
             console.log('Extracted Information:', destinationPath)
             console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
             //API Checker
-            apiChecker = await checkApi()
+            apiChecker = await checkApi(systemSettings.api_endpoint)
             if (apiChecker !== true) {
               stopFileWatcher()
               apiToVue()
               return
             }
             // API Call
-            const uploadedResult = await updatePath({
-              ID: extractRenderDetailIDResult,
-              DocumentPath: finalizeDocPath(destinationPath)
-            })
+            const uploadedResult = await updatePath(
+              {
+                ID: extractRenderDetailIDResult,
+                DocumentPath: finalizeDocPath(destinationPath)
+              },
+              systemSettings.api_endpoint
+            )
 
             setTerminal('fc-green', uploadedResult)
             toastToVue(uploadedResult)
