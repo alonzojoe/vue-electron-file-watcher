@@ -18,67 +18,82 @@
     <Dialog
       v-model:visible="visible"
       modal
-      header="Settings"
+      :header="!flag ? 'Settings' : ''"
       :style="{ width: '50rem' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw', '900px': '50vw' }"
     >
-      <span class="p-text-secondary block text-sm mb-3">Update Settings</span>
-      <div class="px-5">
-        <div class="flex align-items-center gap-3 mb-3">
-          <label for="orders" class="font-semibold w-6rem">Orders Directory </label>
-          <InputText
-            id="orders"
-            v-model="currentSettings.orders_directory"
-            class="flex-auto"
-            :class="{ 'p-invalid': flag && currentSettings.orders_directory.trim().length === 0 }"
-            autocomplete="off"
-            size="small"
-          />
+      <div v-if="!flag">
+        <span class="p-text-secondary block text-sm mb-3">Update Settings</span>
+        <div class="px-5">
+          <div class="flex align-items-center gap-3 mb-3">
+            <label for="orders" class="font-semibold w-6rem">Orders Directory </label>
+            <InputText
+              id="orders"
+              v-model="currentSettings.orders_directory"
+              class="flex-auto"
+              :class="{ 'p-invalid': flag && currentSettings.orders_directory.trim().length === 0 }"
+              autocomplete="off"
+              size="small"
+            />
+          </div>
+          <div class="flex align-items-center gap-3 mb-3">
+            <label for="destination" class="font-semibol d w-6rem">Orders Directory </label>
+            <InputText
+              id="destination"
+              v-model="currentSettings.target_directory"
+              class="flex-auto"
+              :class="{ 'p-invalid': flag && currentSettings.target_directory.trim().length === 0 }"
+              autocomplete="off"
+              size="small"
+            />
+          </div>
+          <div class="flex align-items-center gap-3 mb-3">
+            <label for="api" class="font-semibol d w-6rem">API Endpoint </label>
+            <InputText
+              id="api"
+              v-model="currentSettings.api_endpoint"
+              class="flex-auto"
+              :class="{ 'p-invalid': flag && currentSettings.api_endpoint.trim().length === 0 }"
+              autocomplete="off"
+              size="small"
+            />
+          </div>
+          <div class="flex justify-content-end gap-2">
+            <Button
+              class="p-button-sm"
+              type="button"
+              label="Cancel"
+              severity="secondary"
+              size="small"
+              :pt="{
+                root: { class: 'cst-font-sm' }
+              }"
+              @click="visible = false"
+            ></Button>
+            <Button
+              class="p-button-sm"
+              type="button"
+              label="Apply Changes"
+              size="small"
+              :pt="{
+                root: { class: 'cst-font-sm' }
+              }"
+              @click="saveSettings()"
+            ></Button>
+          </div>
         </div>
-        <div class="flex align-items-center gap-3 mb-3">
-          <label for="destination" class="font-semibol d w-6rem">Orders Directory </label>
-          <InputText
-            id="destination"
-            v-model="currentSettings.target_directory"
-            class="flex-auto"
-            :class="{ 'p-invalid': flag && currentSettings.target_directory.trim().length === 0 }"
-            autocomplete="off"
-            size="small"
-          />
-        </div>
-        <div class="flex align-items-center gap-3 mb-3">
-          <label for="api" class="font-semibol d w-6rem">API Endpoint </label>
-          <InputText
-            id="api"
-            v-model="currentSettings.api_endpoint"
-            class="flex-auto"
-            :class="{ 'p-invalid': flag && currentSettings.api_endpoint.trim().length === 0 }"
-            autocomplete="off"
-            size="small"
-          />
-        </div>
-        <div class="flex justify-content-end gap-2">
-          <Button
-            class="p-button-sm"
-            type="button"
-            label="Cancel"
-            severity="secondary"
-            size="small"
-            :pt="{
-              root: { class: 'cst-font-sm' }
-            }"
-            @click="visible = false"
-          ></Button>
-          <Button
-            class="p-button-sm"
-            type="button"
-            label="Apply Changes"
-            size="small"
-            :pt="{
-              root: { class: 'cst-font-sm' }
-            }"
-            @click="saveSettings()"
-          ></Button>
+      </div>
+      <div v-else>
+        <div class="px-5">
+          <div class="flex align-items-center justify-content-center mb-3">
+            <img height="150px" width="150px" :src="icon" alt="" />
+          </div>
+          <div class="flex justify-content-center flex-column align-items-center">
+            <p class="text-xl text-center mt-0">Settings updated successfully.</p>
+            <p class="text-lg mt-0 text-center font-medium text-red-500 mb-2">
+              Please restart the file watcher to apply the changes.
+            </p>
+          </div>
         </div>
       </div>
     </Dialog>
@@ -93,6 +108,7 @@ import InputText from 'primevue/inputtext'
 import { useToast } from 'primevue/usetoast'
 
 const toast = useToast()
+const props = defineProps(['icon'])
 
 const { ipcRenderer } = window.electron
 const visible = ref(false)

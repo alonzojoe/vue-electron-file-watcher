@@ -8,6 +8,8 @@ import SwitchTheme from '@renderer/components/header/SwitchTheme.vue'
 import Settings from '@renderer/components/header/Settings.vue'
 import Particles from '@renderer/components/particles/Particles.vue'
 import AnalogClock from '@renderer/components/clock/AnalogClock.vue'
+import BlockUI from 'primevue/blockui'
+import ProgressSpinner from 'primevue/progressspinner'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
 import Dialog from 'primevue/dialog'
@@ -20,6 +22,7 @@ import viteIcon from '../../../resources/vite.png'
 import vueIcon from '../../../resources/vue.png'
 import electronIcon from '../../../resources/icon--2.png'
 import snapIcon from '../../../resources/snap.png'
+import smileIcon from '../../../resources/snap-smile.png'
 import flowProcess from '../../../resources/flow.png'
 import fileIcon from '../../../resources/file.png'
 import fileIconSlashed from '../../../resources/file-slash.png'
@@ -30,7 +33,7 @@ const formattedDate = ref(moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
 const toast = useToast()
 const confirm = useConfirm()
-
+const block = ref(true)
 const showSuccess = (data) => {
   toast.add({
     severity: 'success',
@@ -189,79 +192,93 @@ onBeforeUnmount(() => {
       </p>
     </div>
   </Dialog>
-  <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
-  <div class="grid fadein animation-duration-1000 relative" v-show="mainMenu">
-    <div class="icon-container vite">
-      <img class="img-icon" height="35px" width="35px" :src="viteIcon" alt="" />
-    </div>
-    <div class="icon-container laravel">
-      <img class="img-icon" height="35px" width="35px" :src="laravelIcon" alt="" />
-    </div>
-    <div class="icon-container vue">
-      <img class="img-icon" height="35px" width="35px" :src="vueIcon" alt="" />
-    </div>
-    <div class="icon-container electron">
-      <img class="img-icon" height="35px" width="35px" :src="electronIcon" alt="" />
-    </div>
-    <div class="flow-process">
-      <img :src="flowProcess" alt="flow-process" />
-    </div>
 
-    <Toast />
-    <ConfirmDialog group="positioned"></ConfirmDialog>
-    <div class="col-12">
-      <div class="flex justify-content-between align-items-center gap-2 px-2">
-        <div class="flex gap-2 align-items-center">
-          <SwitchTheme @current-theme="getTheme" :started="started" />
-          <Settings />
-        </div>
-        <div>
-          <Status :started="started" />
+  <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
+  <ProgressSpinner
+    style="width: 50px; height: 50px"
+    strokeWidth="3"
+    fill="var(--surface-ground)"
+    animationDuration=".5s"
+    aria-label="Custom ProgressSpinner"
+  />
+  <BlockUI :blocked="block">
+    <div class="grid fadein animation-duration-1000 relative" v-show="mainMenu">
+      <div class="icon-container vite">
+        <img class="img-icon" height="35px" width="35px" :src="viteIcon" alt="" />
+      </div>
+      <div class="icon-container laravel">
+        <img class="img-icon" height="35px" width="35px" :src="laravelIcon" alt="" />
+      </div>
+      <div class="icon-container vue">
+        <img class="img-icon" height="35px" width="35px" :src="vueIcon" alt="" />
+      </div>
+      <div class="icon-container electron">
+        <img class="img-icon" height="35px" width="35px" :src="electronIcon" alt="" />
+      </div>
+      <div class="flow-process">
+        <img :src="flowProcess" alt="flow-process" />
+      </div>
+
+      <Toast />
+      <ConfirmDialog group="positioned"></ConfirmDialog>
+      <div class="col-12">
+        <div class="flex justify-content-between align-items-center gap-2 px-2">
+          <div class="flex gap-2 align-items-center">
+            <SwitchTheme @current-theme="getTheme" :started="started" />
+            <Settings :icon="smileIcon" />
+          </div>
+          <div>
+            <Status :started="started" />
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-12">
-      <div class="flex justify-content-center">
-        <div>
-          <!-- <Header /> -->
-          <AnalogClock :bg="'#111827'" :color="'#34D399'" :size="'180px'" :icon="eyedIcon" />
+      <div class="col-12">
+        <div class="flex justify-content-center">
+          <div>
+            <!-- <Header /> -->
+            <AnalogClock :bg="'#111827'" :color="'#34D399'" :size="'180px'" :icon="eyedIcon" />
+          </div>
+        </div>
+        <div class="flex justify-content-center">
+          <span class="text-3xl font-semibold mt-3">RIS File Watcher</span>
         </div>
       </div>
-      <div class="flex justify-content-center">
-        <span class="text-3xl font-semibold mt-3">RIS File Watcher</span>
+      <div class="col-12">
+        <div class="flex justify-content-center gap-2">
+          <Button
+            class="btn-control"
+            label="Start"
+            icon="pi pi-play"
+            @click="startWatch()"
+            v-if="!started"
+          />
+          <Button
+            class="btn-control"
+            label="Stop"
+            icon="pi pi-stop"
+            severity="danger"
+            @click="confirmStop()"
+            v-else
+          />
+        </div>
       </div>
-    </div>
-    <div class="col-12">
-      <div class="flex justify-content-center gap-2">
-        <Button
-          class="btn-control"
-          label="Start"
-          icon="pi pi-play"
-          @click="startWatch()"
-          v-if="!started"
+      <div class="col-12 mt-0">
+        <Terminal
+          :messages="terminalMessages"
+          :started="started"
+          @clear-terminal="clearTerminal()"
         />
-        <Button
-          class="btn-control"
-          label="Stop"
-          icon="pi pi-stop"
-          severity="danger"
-          @click="confirmStop()"
-          v-else
-        />
+      </div>
+      <div class="col-12">
+        <div class="flex justify-content-end px-4">
+          <span class="text-xs"
+            >RIS File Watcher v.1.0.0 @build Electron v28.1.2 @Joenell Alonzo (Software
+            Engineer)</span
+          >
+        </div>
       </div>
     </div>
-    <div class="col-12 mt-0">
-      <Terminal :messages="terminalMessages" :started="started" @clear-terminal="clearTerminal()" />
-    </div>
-    <div class="col-12">
-      <div class="flex justify-content-end px-4">
-        <span class="text-xs"
-          >RIS File Watcher v.1.0.0 @build Electron v28.1.2 @Joenell Alonzo (Software
-          Engineer)</span
-        >
-      </div>
-    </div>
-  </div>
+  </BlockUI>
 </template>
 
 <style>
