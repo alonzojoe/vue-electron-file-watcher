@@ -12,6 +12,7 @@ import db from './service/database'
 
 let watcher
 let mainWindow
+let systemSettings
 
 async function updateSettings(settings) {
   console.log('update sqlite', settings)
@@ -107,15 +108,16 @@ function apiToVue() {
   mainWindow.webContents.send('api-not-found', true)
 }
 
-function retrieveData() {
-  getSettings()
-    .then((data) => {
-      console.log('promis retrieved data', data)
-      mainWindow.webContents.send('settings-to-vue', data)
-    })
-    .catch((error) => {
-      console.log('error in sqlite', error)
-    })
+async function retrieveData() {
+  try {
+    const data = await getSettings()
+    console.log('Promise retrieved data', data)
+    mainWindow.webContents.send('settings-to-vue', data)
+    return data
+  } catch (error) {
+    console.log('Error in SQLite:', error)
+    return null
+  }
 }
 
 function settingsTovue() {
@@ -339,7 +341,7 @@ ipcMain.handle('updateSettings', async (event, serializedData) => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -351,7 +353,8 @@ app.whenReady().then(() => {
   })
 
   createWindow()
-  retrieveData()
+  systemSettings = await retrieveData()
+  console.log('system settings', systemSettings)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
