@@ -30,7 +30,7 @@ async function updateSettings(settings) {
 
 async function getSettings() {
   return new Promise((resolve) => {
-    db.get('SELECT * FROM settings ORDER BY id DESC LIMIT 1', (err, row) => {
+    db.get('SELECT * FROM settings WHERE id = 1 LIMIT 1', (err, row) => {
       if (err) {
         console.error('Error retrieving settings:', err)
         resolve(null)
@@ -59,7 +59,7 @@ function createWindow() {
   })
 
   mainWindow.setMenu(null)
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
