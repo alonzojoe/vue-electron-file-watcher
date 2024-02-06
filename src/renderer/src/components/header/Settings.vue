@@ -64,6 +64,7 @@
               type="button"
               label="Cancel"
               severity="secondary"
+              :disabled="invoked"
               size="small"
               :pt="{
                 root: { class: 'cst-font-sm' }
@@ -73,9 +74,10 @@
             <Button
               class="p-button-sm"
               type="button"
-              label="Apply Changes"
+              :label="invoked ? 'Applying Changes...' : 'Apply Changes'"
               size="small"
-              :icon="'pi pi-spin pi-spinner'"
+              :icon="{ 'pi pi-spin pi-spinner': invoked }"
+              :disabled="invoked"
               :pt="{
                 root: { class: 'cst-font-sm' }
               }"
@@ -90,7 +92,7 @@
             <img height="150px" width="150px" :src="icon" alt="" />
           </div>
           <div class="flex justify-content-center flex-column align-items-center">
-            <p class="text-xl text-center mt-0">Settings updated successfully.</p>
+            <p class="text-xl text-center text-green-500 mt-0">Settings updated successfully.</p>
             <p class="text-lg mt-0 text-center font-medium text-red-500 mb-2">
               Please restart the file watcher to apply the changes.
             </p>
@@ -138,7 +140,9 @@ ipcRenderer.on('settings-to-vue', (event, data) => {
   console.log('data received in vue settings component', data)
 })
 
+const invoked = ref(false)
 const invokeUpdate = async (data) => {
+  invoked.value = true
   const serializedData = JSON.stringify(data)
   await window.electron.ipcRenderer.invoke('updateSettings', serializedData)
 }
@@ -165,6 +169,7 @@ const saveSettings = async () => {
 }
 
 const resetStates = () => {
+  invoked.value = false
   succed.value = false
   flag.value = false
 }
