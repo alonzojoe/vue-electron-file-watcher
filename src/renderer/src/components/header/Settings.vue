@@ -25,31 +25,34 @@
       <span class="p-text-secondary block text-sm mb-3">Update Settings</span>
       <div class="px-5">
         <div class="flex align-items-center gap-3 mb-3">
-          <label for="orders" class="font-semibold w-6rem">Orders Directory</label>
+          <label for="orders" class="font-semibold w-6rem">Orders Directory </label>
           <InputText
             id="orders"
             v-model="currentSettings.orders_directory"
             class="flex-auto"
+            :class="{ 'p-invalid': flag && currentSettings.orders_directory.trim().length === 0 }"
             autocomplete="off"
             size="small"
           />
         </div>
         <div class="flex align-items-center gap-3 mb-3">
-          <label for="destination" class="font-semibol d w-6rem">Orders Directory</label>
+          <label for="destination" class="font-semibol d w-6rem">Orders Directory </label>
           <InputText
             id="destination"
             v-model="currentSettings.target_directory"
             class="flex-auto"
+            :class="{ 'p-invalid': flag && currentSettings.target_directory.trim().length === 0 }"
             autocomplete="off"
             size="small"
           />
         </div>
         <div class="flex align-items-center gap-3 mb-3">
-          <label for="api" class="font-semibol d w-6rem">API Endpoint</label>
+          <label for="api" class="font-semibol d w-6rem">API Endpoint </label>
           <InputText
             id="api"
             v-model="currentSettings.api_endpoint"
             class="flex-auto"
+            :class="{ 'p-invalid': flag && currentSettings.api_endpoint.trim().length === 0 }"
             autocomplete="off"
             size="small"
           />
@@ -87,6 +90,9 @@ import { watch, ref, onMounted } from 'vue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
 
 const { ipcRenderer } = window.electron
 const visible = ref(false)
@@ -114,13 +120,25 @@ ipcRenderer.on('settings-to-vue', (event, data) => {
   console.log('data received in vue settings component', data)
 })
 
+const flag = ref(false)
 const saveSettings = async () => {
+  flag.value = true
   if (!validateSettings()) {
     console.log('validation failed')
+    toast.add({
+      severity: 'error',
+      summary: 'Message',
+      detail: 'Settings validation failed.',
+      life: 3000
+    })
     return
   }
   console.log('validated!')
 }
+
+onMounted(() => {
+  flag.value = false
+})
 </script>
 
 <style lang="scss" scoped>
