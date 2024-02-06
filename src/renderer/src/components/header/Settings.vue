@@ -98,8 +98,10 @@ const currentSettings = ref({
   api_endpoint: ''
 })
 
-const areAllPropertiesEmpty = (obj) => {
-  return Object.values(obj).every((value) => value.trim() === '')
+const validateSettings = () => {
+  return Object.entries(currentSettings.value).every(
+    ([key, value]) => key === 'id' || (typeof value === 'string' && value.trim().length > 0)
+  )
 }
 
 const showSettings = async () => {
@@ -113,8 +115,11 @@ ipcRenderer.on('settings-to-vue', (event, data) => {
 })
 
 const saveSettings = async () => {
-  const isValidForm = await areAllPropertiesEmpty(currentSettings.value)
-  console.log(isValidForm)
+  if (!validateSettings()) {
+    console.log('validation failed')
+    return
+  }
+  console.log('validated!')
 }
 </script>
 
