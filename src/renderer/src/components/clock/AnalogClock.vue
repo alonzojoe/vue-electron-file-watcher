@@ -158,7 +158,7 @@ $angle: 30deg;
     transform: translate(-50%, -50%);
     border: 2px solid #666666;
     border-radius: 100%;
-    background-color: #9feaf9;
+    background-color: #34d399;
     z-index: 1;
     box-sizing: border-box;
 

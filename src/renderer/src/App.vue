@@ -209,19 +209,22 @@ onBeforeUnmount(() => {
 
     <Toast />
     <ConfirmDialog group="positioned"></ConfirmDialog>
-    <Button class="btn-control" label="Start" icon="pi pi-play" @click="updateSettings()" />
     <div class="col-12">
       <div class="flex justify-content-between align-items-center gap-2 px-2">
-        <SwitchTheme @current-theme="getTheme" :started="started" />
-        <Status :started="started" />
-        <Settings />
+        <div class="flex gap-2 align-items-center">
+          <SwitchTheme @current-theme="getTheme" :started="started" />
+          <Settings />
+        </div>
+        <div>
+          <Status :started="started" />
+        </div>
       </div>
     </div>
     <div class="col-12">
       <div class="flex justify-content-center">
         <div>
           <!-- <Header /> -->
-          <AnalogClock :bg="'#2B2E3A'" :color="'#9FEAF9'" :size="'180px'" :icon="eyedIcon" />
+          <AnalogClock :bg="'#111827'" :color="'#34D399'" :size="'180px'" :icon="eyedIcon" />
         </div>
       </div>
       <div class="flex justify-content-center">
