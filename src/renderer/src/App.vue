@@ -113,7 +113,7 @@ ipcRenderer.on('api-not-found', (event, data) => {
 })
 
 ipcRenderer.on('drive-not-found', (event, data) => {
-  console.log('data received in vue component', data)
+  errorDrive(data)
 })
 
 const mainMenu = ref(false)
@@ -159,11 +159,19 @@ const eyedIcon = computed(() => {
   return !started.value ? fileIconSlashed : fileIcon
 })
 
+const dialogTitle = ref(`API Endpoint Not Found.`)
+
 const dialogMessage = ref(
   'Check the API server configuration and file watcher settings, then relaunch the file watcher.'
 )
 
-const errorDrive = () => {}
+const startDisable = ref(false)
+const errorDrive = (data) => {
+  startDisable.value = true
+  dialogTitle.value = `Missing Drive${data.plural}`
+  dialogMessage.value = data.message
+  visible.value = true
+}
 
 onBeforeUnmount(() => {
   stopInterval()
@@ -185,15 +193,27 @@ onBeforeUnmount(() => {
       <img height="150px" width="150px" :src="snapIcon" alt="" />
     </div>
     <div class="flex justify-content-center flex-column align-items-center">
-      <p class="text-xl font-medium text-red-500 mb-2">Oops! 404 - API Endpoint Not Found.</p>
+      <p class="text-xl font-medium text-red-500 mb-2">Oops! 404 - {{ dialogTitle }}.</p>
       <p class="text-lg text-center mt-0">
-        {{ dialogMessage }}
+        {{ dialogMessage }} Please check if the drive name matches the one saved in the file watcher
+        settings and relaunch the file watcher.
       </p>
+      <Button
+        class="p-button-sm"
+        type="button"
+        label="Close"
+        size="small"
+        severity="danger"
+        :disabled="invoked"
+        :pt="{
+          root: { class: 'cst-font-sm' }
+        }"
+        @click="visible = false"
+      ></Button>
     </div>
   </Dialog>
 
   <Welcome @show-main="showMain($event)" v-if="!mainMenu" />
-  {{ dialogMessage }}
   <div class="grid fadein animation-duration-1000 relative" v-show="mainMenu">
     <div class="icon-container vite">
       <img class="img-icon" height="35px" width="35px" :src="viteIcon" alt="" />
@@ -241,6 +261,7 @@ onBeforeUnmount(() => {
           class="btn-control"
           label="Start"
           icon="pi pi-play"
+          :disabled="startDisable"
           @click="startWatch()"
           v-if="!started"
         />

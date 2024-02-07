@@ -135,6 +135,10 @@ function checkMappedDrives(settings, driveName) {
     const missingDrivesMessage = missingDrives.join(' and ')
     const drivePlural = missingDrives.length > 1 ? 's' : ''
     const errorMessage = `Drive${drivePlural} ${missingDrivesMessage} do not exist in the Windows devices & drives.`
+    mainWindow.webContents.send('drive-not-found', {
+      message: errorMessage,
+      plural: drivePlural
+    })
     console.error(
       `Drive${drivePlural} ${missingDrivesMessage} do not exist in the Windows devices & drives.`
     )
@@ -380,7 +384,9 @@ app.whenReady().then(async () => {
   systemSettings = await retrieveData()
   console.log('system settings', systemSettings)
 
-  checkMappedDrives(systemSettings)
+  setTimeout(() => {
+    checkMappedDrives(systemSettings)
+  }, 3000)
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
