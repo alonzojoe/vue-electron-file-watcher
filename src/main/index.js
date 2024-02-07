@@ -120,13 +120,24 @@ async function retrieveData() {
   }
 }
 
-function checkMappedDrives(directoryPath, driveName) {
-  const driveExists = fs.existsSync(directoryPath)
+function checkMappedDrives(settings, driveName) {
+  const missingDrives = []
 
-  if (driveExists) {
-    console.log(`${driveName} exists: ${directoryPath}`)
-  } else {
-    console.error(`${driveName} does not exist: ${directoryPath}`)
+  if (!fs.existsSync(settings.orders_directory)) {
+    missingDrives.push(settings.orders_directory)
+  }
+
+  if (!fs.existsSync(settings.target_directory)) {
+    missingDrives.push(settings.target_directory)
+  }
+
+  if (missingDrives.length > 0) {
+    const missingDrivesMessage = missingDrives.join(' and ')
+    const drivePlural = missingDrives.length > 1 ? 's' : ''
+    const errorMessage = `Drive${drivePlural} ${missingDrivesMessage} do not exist in the Windows devices & drives.`
+    console.error(
+      `Drive${drivePlural} ${missingDrivesMessage} do not exist in the Windows devices & drives.`
+    )
   }
 }
 
@@ -369,8 +380,7 @@ app.whenReady().then(async () => {
   systemSettings = await retrieveData()
   console.log('system settings', systemSettings)
 
-  checkMappedDrives(systemSettings.orders_directory, 'orders_directory')
-  checkMappedDrives(systemSettings.target_directory, 'target_directory')
+  checkMappedDrives(systemSettings)
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
