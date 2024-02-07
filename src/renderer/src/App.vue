@@ -177,7 +177,8 @@ onBeforeUnmount(() => {
     <div class="flex justify-content-center flex-column align-items-center">
       <p class="text-xl font-medium text-red-500 mb-2">Oops! 404 - API Endpoint Not Found.</p>
       <p class="text-lg text-center mt-0">
-        Check API server configuration, file watcher settings and restart the file watcher.
+        Check the API server configuration and file watcher settings, then relaunch the file
+        watcher.
       </p>
     </div>
   </Dialog>

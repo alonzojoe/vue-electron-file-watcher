@@ -94,7 +94,7 @@
           <div class="flex justify-content-center flex-column align-items-center">
             <p class="text-xl text-center text-green-500 mt-0">Settings updated successfully.</p>
             <p class="text-lg mt-0 text-center font-medium text-red-500 mb-2">
-              Please restart the file watcher to apply the changes.
+              Please relaunch the file watcher to apply the changes.
             </p>
           </div>
         </div>
