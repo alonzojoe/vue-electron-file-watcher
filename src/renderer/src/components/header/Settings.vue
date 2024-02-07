@@ -37,7 +37,7 @@
             />
           </div>
           <div class="flex align-items-center gap-3 mb-3">
-            <label for="destination" class="font-semibol d w-6rem">Orders Directory </label>
+            <label for="destination" class="font-semibol d w-6rem">Target Directory </label>
             <InputText
               id="destination"
               v-model="currentSettings.target_directory"
