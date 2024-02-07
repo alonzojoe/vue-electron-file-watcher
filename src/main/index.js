@@ -120,6 +120,16 @@ async function retrieveData() {
   }
 }
 
+function checkMappedDrives(directoryPath, driveName) {
+  const driveExists = fs.existsSync(directoryPath)
+
+  if (driveExists) {
+    console.log(`${driveName} exists: ${directoryPath}`)
+  } else {
+    console.error(`${driveName} does not exist: ${directoryPath}`)
+  }
+}
+
 function settingsTovue() {
   mainWindow.webContents.send('settings-to-vue', true)
 }
@@ -359,6 +369,8 @@ app.whenReady().then(async () => {
   systemSettings = await retrieveData()
   console.log('system settings', systemSettings)
 
+  checkMappedDrives(systemSettings.orders_directory, 'orders_directory')
+  checkMappedDrives(systemSettings.target_directory, 'target_directory')
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
