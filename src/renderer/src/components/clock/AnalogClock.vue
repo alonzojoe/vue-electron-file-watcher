@@ -1,6 +1,6 @@
 <template>
   <div class="clock" :style="clockStyle">
-    <img class="file-icon" :src="props.icon" height="80px" width="100px" alt="file-icon" />
+    <img class="file-icon pe-none" :src="props.icon" height="80px" width="100px" alt="file-icon" />
     <div class="clock-circle"></div>
     <div class="clock-hour" :style="{ transform: hourRotate }"></div>
     <div class="clock-minute" :style="{ transform: minuteRotate }"></div>

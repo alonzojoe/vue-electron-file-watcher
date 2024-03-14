@@ -227,7 +227,7 @@ onBeforeUnmount(() => {
     <div class="icon-container electron">
       <img class="img-icon" height="35px" width="35px" :src="electronIcon" alt="" />
     </div>
-    <div class="flow-process">
+    <div class="flow-process pe-none">
       <img :src="flowProcess" alt="flow-process" />
     </div>
 
