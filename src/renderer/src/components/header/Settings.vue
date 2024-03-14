@@ -23,7 +23,7 @@
       :breakpoints="{ '1199px': '75vw', '575px': '90vw', '900px': '50vw' }"
     >
       <div v-if="!succed">
-        <span class="p-text-secondary block text-sm mb-3">Update Settings</span>
+        <span class="p-text-secondary block text-sm mb-3">System Configuration</span>
         <div class="px-5">
           <div class="flex align-items-center gap-3 mb-3">
             <label for="orders" class="font-semibold w-6rem">Orders Directory </label>
