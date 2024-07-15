@@ -280,10 +280,7 @@ onBeforeUnmount(() => {
     </div>
     <div class="col-12">
       <div class="flex justify-content-end px-4">
-        <span class="text-xs"
-          >RIS File Watcher v.1.0.0 @build Electron v28.1.2 @Joenell Alonzo (Software
-          Engineer)</span
-        >
+        <span class="text-xs">RIS File Watcher v.1.0.0 @build Electron v28.1.2</span>
       </div>
     </div>
   </div>

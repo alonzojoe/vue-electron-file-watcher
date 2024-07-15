@@ -1,7 +1,7 @@
 <template>
   <div>
     <Button
-      :icon="currentTheme == 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
+      :icon="currentTheme == 'dark' ? 'pi pi-moon' : 'pi pi-sun'"
       v-tooltip.right="{
         value: `Change theme`,
         pt: {
