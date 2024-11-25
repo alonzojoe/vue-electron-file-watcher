@@ -85,7 +85,7 @@ const confirmStop = () => {
         life: 3000
       })
     },
-    reject: () => {}
+    reject: () => { }
   })
 }
 
@@ -136,9 +136,12 @@ const clearTerminal = () => {
   ]
 }
 
-let intervalId
+let intervalId = null;
 
 const startInterval = () => {
+  clearInterval(intervalId)
+
+
   intervalId = setInterval(() => {
     clearTerminal()
   }, moment.duration(4, 'hours').asMilliseconds())
@@ -151,6 +154,10 @@ const stopInterval = () => {
 onMounted(() => {
   startInterval()
   console.log(ipcRenderer)
+})
+
+onUnmounted(() => {
+  stopInterval()
 })
 
 const visible = ref(false)
@@ -180,15 +187,8 @@ onBeforeUnmount(() => {
 
 <template>
   <Particles />
-  <Dialog
-    v-model:visible="visible"
-    modal
-    :closeOnEscape="false"
-    :close-icon="false"
-    :draggable="false"
-    :style="{ width: '50rem' }"
-    :breakpoints="{ '1199px': '75vw', '575px': '90vw', '900px': '50vw' }"
-  >
+  <Dialog v-model:visible="visible" modal :closeOnEscape="false" :close-icon="false" :draggable="false"
+    :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw', '900px': '50vw' }">
     <div class="flex align-items-center justify-content-center">
       <img height="150px" width="150px" :src="snapIcon" alt="" />
     </div>
@@ -198,18 +198,9 @@ onBeforeUnmount(() => {
         {{ dialogMessage }} Please check if the drive name matches the one saved in the file watcher
         settings and relaunch the file watcher.
       </p>
-      <Button
-        class="p-button-sm"
-        type="button"
-        label="Close"
-        size="small"
-        severity="danger"
-        :disabled="invoked"
-        :pt="{
-          root: { class: 'cst-font-sm' }
-        }"
-        @click="visible = false"
-      ></Button>
+      <Button class="p-button-sm" type="button" label="Close" size="small" severity="danger" :disabled="invoked" :pt="{
+        root: { class: 'cst-font-sm' }
+      }" @click="visible = false"></Button>
     </div>
   </Dialog>
 
@@ -257,22 +248,9 @@ onBeforeUnmount(() => {
     </div>
     <div class="col-12">
       <div class="flex justify-content-center gap-2">
-        <Button
-          class="btn-control"
-          label="Start"
-          icon="pi pi-play"
-          :disabled="startDisable"
-          @click="startWatch()"
-          v-if="!started"
-        />
-        <Button
-          class="btn-control"
-          label="Stop"
-          icon="pi pi-stop"
-          severity="danger"
-          @click="confirmStop()"
-          v-else
-        />
+        <Button class="btn-control" label="Start" icon="pi pi-play" :disabled="startDisable" @click="startWatch()"
+          v-if="!started" />
+        <Button class="btn-control" label="Stop" icon="pi pi-stop" severity="danger" @click="confirmStop()" v-else />
       </div>
     </div>
     <div class="col-12 mt-0">
@@ -318,9 +296,11 @@ element.style {
   right: 20px;
   z-index: 1101;
 }
+
 .p-toast {
   opacity: 1;
 }
+
 .p-component {
   font-family: var(--font-family);
   font-feature-settings: var(--font-feature-settings, normal);
@@ -337,6 +317,7 @@ element.style {
 .p-component {
   font-size: 0.7rem;
 }
+
 .btn-control {
   font-size: 1rem !important;
 }
@@ -415,6 +396,7 @@ element.style {
 }
 
 @keyframes bounce {
+
   0%,
   20%,
   50%,
@@ -422,19 +404,23 @@ element.style {
   100% {
     transform: translateY(0);
   }
+
   40% {
     transform: translateY(-12px);
   }
+
   60% {
     transform: translateY(-7px);
   }
 }
 
 @keyframes glow {
+
   0%,
   100% {
     box-shadow: 0 0 10px rgba(200, 200, 200, 0.7);
   }
+
   50% {
     box-shadow: 0 0 40px rgba(200, 200, 200, 0.2);
   }
