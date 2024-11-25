@@ -266,6 +266,14 @@ function startFileWatcher() {
             const extractRenderDetailIDResult = extractRenderDetailID(fileName)
             console.log('Extracted Information:', destinationPath)
             console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
+
+            const validateFileName = isNumericFileName(fileName)
+            if (!validateFileName) {
+              console.log(`Skipped processing for non-numeric file name: ${fileName}`)
+              setTimeout(processNextFile, 30000) // Skip the processing and continue to the next file
+              return
+            }
+
             //API Checker
             apiChecker = await checkApi(systemSettings.api_endpoint)
             if (apiChecker !== true) {
