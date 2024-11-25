@@ -275,7 +275,7 @@ function startFileWatcher() {
               return
             }
             // API Call
-            const validateFileName = isNumericFileName(fileName)
+            const validateFileName = isNumericFileName(extractRenderDetailIDResult)
 
             if (validateFileName) {
               const uploadedResult = await updatePath(
@@ -289,7 +289,7 @@ function startFileWatcher() {
               setTerminal('fc-green', uploadedResult)
               toastToVue(uploadedResult)
             } else {
-              setTerminal('fc-red', 'Invalid file name. Skipping...')
+              setTerminal('fc-red', `Invalid file name. Skipping... ${fileName}`)
             }
 
             // Continue to the next file after a 30-second delay

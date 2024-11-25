@@ -66,3 +66,8 @@ export function isNumericFileName(fileName) {
   if (isNaN(fileName)) return false
   return true
 }
+
+
+export function isErrorFileName(filename) {
+  return filename.includes('JBL')
+}
