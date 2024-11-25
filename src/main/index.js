@@ -1,6 +1,12 @@
 import { app, shell, BrowserWindow, contextBridge, ipcMain, nativeImage } from 'electron'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { extractRenderDetailID, updatePath, finalizeDocPath, checkApi } from './service'
+import {
+  extractRenderDetailID,
+  updatePath,
+  finalizeDocPath,
+  checkApi,
+  isNumericFileName
+} from './service'
 import { join, basename } from 'path'
 import chokidar from 'chokidar'
 import fs from 'fs'

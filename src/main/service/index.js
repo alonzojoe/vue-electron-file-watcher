@@ -2,7 +2,8 @@ import api from '../../renderer/src/api'
 import axios from 'axios'
 
 export function extractRenderDetailID(fileName) {
-  const match = fileName.match(/^(\d+)/)
+  // const match = fileName.match(/^(\d+)/)
+  const match = fileName.match(/\d+/)
   return match ? match[1] : null
 }
 
@@ -59,4 +60,9 @@ export async function checkApi(endpoint) {
   }
   console.log('electron console', results)
   return results
+}
+
+export function isNumericFileName(fileName) {
+  if (isNaN(fileName)) return false
+  return true
 }
