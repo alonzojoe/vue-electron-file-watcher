@@ -267,13 +267,6 @@ function startFileWatcher() {
             console.log('Extracted Information:', destinationPath)
             console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
 
-            const validateFileName = isNumericFileName(fileName)
-            if (!validateFileName) {
-              console.log(`Skipped processing for non-numeric file name: ${fileName}`)
-              setTimeout(processNextFile, 30000) // Skip the processing and continue to the next file
-              return
-            }
-
             //API Checker
             apiChecker = await checkApi(systemSettings.api_endpoint)
             if (apiChecker !== true) {
@@ -282,16 +275,22 @@ function startFileWatcher() {
               return
             }
             // API Call
-            const uploadedResult = await updatePath(
-              {
-                ID: extractRenderDetailIDResult,
-                DocumentPath: finalizeDocPath(destinationPath)
-              },
-              systemSettings.api_endpoint
-            )
+            const validateFileName = isNumericFileName(fileName)
 
-            setTerminal('fc-green', uploadedResult)
-            toastToVue(uploadedResult)
+            if (validateFileName) {
+              const uploadedResult = await updatePath(
+                {
+                  ID: extractRenderDetailIDResult,
+                  DocumentPath: finalizeDocPath(destinationPath)
+                },
+                systemSettings.api_endpoint
+              )
+
+              setTerminal('fc-green', uploadedResult)
+              toastToVue(uploadedResult)
+            } else {
+              setTerminal('fc-red', 'Invalid file name. Skipping...')
+            }
 
             // Continue to the next file after a 30-second delay
             setTimeout(processNextFile, 30000)

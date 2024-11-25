@@ -1,8 +1,8 @@
 import sqlite3 from 'sqlite3'
 import path from 'path'
 
-const dbPath = path.resolve('resources/database/database.db') //development
-// const dbPath = path.resolve('resources/app.asar.unpacked/resources/database/database.db') //production
+// const dbPath = path.resolve('resources/database/database.db') //development
+const dbPath = path.resolve('resources/app.asar.unpacked/resources/database/database.db') //production
 const db = new sqlite3.Database(dbPath)
 
 db.serialize(() => {
