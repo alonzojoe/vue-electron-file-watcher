@@ -68,5 +68,10 @@ export function isNumericFileName(fileName) {
 }
 
 export function isErrorFileName(filename) {
-  return filename.includes('JBL')
+  return isNaN(filename)
+}
+
+export function isValidFIleName(fileName) {
+  const nameWithoutExtension = fileName.replace(/\.pdf$/i, '')
+  return !isNaN(nameWithoutExtension) && nameWithoutExtension.trim() !== ''
 }

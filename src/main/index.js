@@ -5,8 +5,9 @@ import {
   updatePath,
   finalizeDocPath,
   checkApi,
-  isNumericFileName,
-  isErrorFileName
+  // isNumericFileName,
+  isErrorFileName,
+  isValidFIleName
 } from './service'
 import { join, basename } from 'path'
 import chokidar from 'chokidar'
@@ -276,9 +277,9 @@ function startFileWatcher() {
               return
             }
             // API Call
-            const validateFileName = isErrorFileName(fileName)
+            const validateFileName = isValidFIleName(fileName)
 
-            if (!validateFileName) {
+            if (validateFileName) {
               const uploadedResult = await updatePath(
                 {
                   ID: extractRenderDetailIDResult,
