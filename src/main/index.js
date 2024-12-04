@@ -77,6 +77,8 @@ function createWindow() {
     return { action: 'deny' }
   })
 
+  mainWindow.openDevTools()
+
   mainWindow.setThumbarButtons([
     {
       tooltip: 'button1',
