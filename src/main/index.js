@@ -18,7 +18,7 @@ import path from 'path'
 import icon from '../../resources/electron.png?asset'
 import db from './service/database'
 
-let watcher
+let watcher = null
 let mainWindow
 let systemSettings
 
@@ -168,11 +168,14 @@ function setTerminal(color, result) {
   })
 }
 
+let watcherRunning = false
+let monitorInterval = null
+
 function startFileWatcher() {
   const ordersFolder = `${systemSettings.orders_directory}\\PDF`
   const targetFolder = `${systemSettings.target_directory}\\`
 
-  if (watcher) {
+  if (watcherRunning) {
     console.log('File watcher is already running')
     return
   }
@@ -182,10 +185,13 @@ function startFileWatcher() {
     persistent: true
   })
 
+  watcherRunning = true
   console.log(`Watching for changes in ${ordersFolder}`)
-
   setTerminal('fc-green', 'File Watcher Started...')
-  let apiChecker
+
+  let isProcessing = false // Flag to track if a file is being processed
+  const watcherQueue = [] // Queue to store files while processing
+
   async function tryMoveFile(filePath) {
     const fileName = basename(filePath)
     const fileDate = moment()
@@ -197,116 +203,77 @@ function startFileWatcher() {
     const destinationYearPath = join(targetFolder, year)
     const destinationMonthPath = join(destinationYearPath, month)
     const destinationDayPath = join(destinationMonthPath, day)
-
     const destinationPath = join(destinationDayPath, fileName)
-    apiChecker = await checkApi(systemSettings.api_endpoint)
-    if (apiChecker !== true) {
+
+    const apiChecker = await checkApi(systemSettings.api_endpoint)
+    if (!apiChecker) {
+      console.error('API is down. Restarting watcher...')
       stopFileWatcher()
-      apiToVue()
+      restartFileWatcher()
       return
     }
-    // Create Directory if they are not existed
-    if (!fs.existsSync(destinationYearPath)) {
-      setTerminal('fc-orange', `Checking if folder year ${year} exists`)
-      await fsExtra.ensureDir(destinationYearPath)
-      setTerminal('fc-green', `Folder ${destinationYearPath} created`)
-    } else {
-      setTerminal('fc-yellow', `Folder existed ${destinationYearPath}`)
-    }
 
-    if (!fs.existsSync(destinationMonthPath)) {
-      setTerminal('fc-orange', `Checking if folder month ${month} exists`)
-      await fsExtra.ensureDir(destinationMonthPath)
-      setTerminal('fc-green', `Folder ${destinationMonthPath} created`)
-    } else {
-      setTerminal('fc-yellow', `Folder existed ${destinationMonthPath}`)
-    }
+    // Ensure destination directories exist
+    await ensureDirectories([destinationYearPath, destinationMonthPath, destinationDayPath])
 
-    if (!fs.existsSync(destinationDayPath)) {
-      setTerminal('fc-orange', `Checking if folder day ${day} exists`)
-      await fsExtra.ensureDir(destinationDayPath)
-      setTerminal('fc-green', `Folder ${destinationDayPath} created`)
-    } else {
-      setTerminal('fc-yellow', `Folder existed ${destinationDayPath}`)
-    }
-
-    // Retry moving the file with a delay after 10 seconds
+    // Retry logic for file copy
     const maxRetries = 3
     let retries = 0
 
     fsExtra.copy(filePath, destinationPath, async (err) => {
       if (err) {
-        apiChecker = await checkApi(systemSettings.api_endpoint)
-        if (apiChecker !== true) {
-          stopFileWatcher()
-          apiToVue()
-          return
-        }
         if (err.code === 'EBUSY' && retries < maxRetries) {
-          console.log(`Retrying (${retries + 1}/${maxRetries})...`)
           retries++
-          setTimeout(() => tryMoveFile(filePath), 10000)
+          console.log(`Retrying (${retries}/${maxRetries})...`)
+          setTimeout(() => tryMoveFile(filePath), 10000) // Retry after delay
         } else {
           console.error(`Error copying ${fileName}: ${err.message}`)
-          // Handle the error or log additional information.
         }
       } else {
         console.log(`Copied ${fileName} to ${destinationPath}`)
-
-        // Remove the original file
-        fsExtra.remove(filePath, async (removeErr) => {
-          if (removeErr) {
-            apiChecker = await checkApi(systemSettings.api_endpoint)
-            if (apiChecker !== true) {
-              stopFileWatcher()
-              apiToVue()
-              return
-            }
-            console.error(`Error removing ${fileName}: ${removeErr.message}`)
-          } else {
-            console.log(`Removed original file: ${filePath}`)
-
-            // Process the extracted information immediately
-            const extractRenderDetailIDResult = extractRenderDetailID(fileName)
-            console.log('Extracted Information:', destinationPath)
-            console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
-
-            //API Checker
-            apiChecker = await checkApi(systemSettings.api_endpoint)
-            if (apiChecker !== true) {
-              stopFileWatcher()
-              apiToVue()
-              return
-            }
-            // API Call
-            const validateFileName = isValidFIleName(fileName)
-
-            if (validateFileName) {
-              const uploadedResult = await updatePath(
-                {
-                  ID: extractRenderDetailIDResult,
-                  DocumentPath: finalizeDocPath(destinationPath)
-                },
-                systemSettings.api_endpoint
-              )
-
-              setTerminal('fc-green', uploadedResult)
-              toastToVue(uploadedResult)
-            } else {
-              setTerminal('fc-red', `Invalid file name. Skipping... ${fileName}`)
-            }
-
-            // Continue to the next file after a 30-second delay
-            setTimeout(processNextFile, 30000)
-          }
-        })
+        await finalizeFileProcess(filePath, fileName, destinationPath)
       }
+    })
+  }
+
+  let processNextFileTimeout
+  async function finalizeFileProcess(filePath, fileName, destinationPath) {
+    await fsExtra.remove(filePath, async (removeErr) => {
+      if (removeErr) {
+        console.error(`Error removing ${fileName}: ${removeErr.message}`)
+        return
+      }
+
+      const extractRenderDetailIDResult = extractRenderDetailID(fileName)
+      const validateFileName = isValidFIleName(fileName)
+
+      if (validateFileName) {
+        const uploadedResult = await updatePath(
+          {
+            ID: extractRenderDetailIDResult,
+            DocumentPath: finalizeDocPath(destinationPath)
+          },
+          systemSettings.api_endpoint
+        )
+
+        setTerminal('fc-green', uploadedResult)
+        toastToVue(uploadedResult)
+      } else {
+        setTerminal('fc-red', `Invalid file name. Skipping... ${fileName}`)
+      }
+
+      // Clear any existing timeout to avoid overlapping or multiple calls
+      if (processNextFileTimeout) {
+        clearTimeout(processNextFileTimeout)
+      }
+
+      // Set a new timeout for the next file processing
+      processNextFileTimeout = setTimeout(processNextFile, 30000)
     })
   }
 
   function processNextFile() {
     const nextFile = watcherQueue.shift()
-
     if (nextFile) {
       tryMoveFile(nextFile)
     } else {
@@ -314,22 +281,25 @@ function startFileWatcher() {
     }
   }
 
-  let isProcessing = false // Flag to track whether a file is being processed
-  const watcherQueue = [] // Queue to store files while one is being processed
+  async function ensureDirectories(dirs) {
+    for (const dir of dirs) {
+      if (!fs.existsSync(dir)) {
+        await fsExtra.ensureDir(dir)
+        setTerminal('fc-green', `Folder created: ${dir}`)
+      } else {
+        setTerminal('fc-yellow', `Folder exists: ${dir}`)
+      }
+    }
+  }
 
   watcher.on('add', (filePath) => {
     const fileExtension = path.extname(filePath).toLowerCase()
-    if (fileExtension === '.pdf' && !isProcessing) {
-      // Check if the file still exists
-      if (fs.existsSync(filePath)) {
+    if (fileExtension === '.pdf') {
+      if (!isProcessing && fs.existsSync(filePath)) {
         isProcessing = true
         watcherQueue.push(filePath)
         tryMoveFile(watcherQueue.shift())
-      } else {
-        console.error(`File does not exist: ${filePath}`)
-      }
-    } else if (fileExtension === '.pdf') {
-      if (fs.existsSync(filePath)) {
+      } else if (fs.existsSync(filePath)) {
         watcherQueue.push(filePath)
       } else {
         console.error(`File does not exist: ${filePath}`)
@@ -337,14 +307,197 @@ function startFileWatcher() {
     }
   })
 
-  watcher.on('unlink', (filePath) => {
-    console.error(`File deleted before processing: ${filePath}`)
+  watcher.on('error', (error) => {
+    console.error('Watcher error:', error)
+    stopFileWatcher()
+    restartFileWatcher()
   })
 
-  watcher.on('error', (error) => {
-    console.error(`Error watching files: ${error}`)
+  watcher.on('close', () => {
+    console.log('Watcher stopped.')
+    watcherRunning = false
   })
+
+  startMonitor()
 }
+
+// function startFileWatcher() {
+//   const ordersFolder = `${systemSettings.orders_directory}\\PDF`
+//   const targetFolder = `${systemSettings.target_directory}\\`
+
+//   if (watcher) {
+//     console.log('File watcher is already running')
+//     return
+//   }
+
+//   watcher = chokidar.watch(ordersFolder, {
+//     ignored: /^\./,
+//     persistent: true
+//   })
+
+//   console.log(`Watching for changes in ${ordersFolder}`)
+
+//   setTerminal('fc-green', 'File Watcher Started...')
+//   let apiChecker
+//   async function tryMoveFile(filePath) {
+//     const fileName = basename(filePath)
+//     const fileDate = moment()
+
+//     const year = fileDate.format('YYYY')
+//     const month = fileDate.format('MM')
+//     const day = fileDate.format('DD')
+
+//     const destinationYearPath = join(targetFolder, year)
+//     const destinationMonthPath = join(destinationYearPath, month)
+//     const destinationDayPath = join(destinationMonthPath, day)
+
+//     const destinationPath = join(destinationDayPath, fileName)
+//     apiChecker = await checkApi(systemSettings.api_endpoint)
+//     if (apiChecker !== true) {
+//       stopFileWatcher()
+//       apiToVue()
+//       return
+//     }
+//     // Create Directory if they are not existed
+//     if (!fs.existsSync(destinationYearPath)) {
+//       setTerminal('fc-orange', `Checking if folder year ${year} exists`)
+//       await fsExtra.ensureDir(destinationYearPath)
+//       setTerminal('fc-green', `Folder ${destinationYearPath} created`)
+//     } else {
+//       setTerminal('fc-yellow', `Folder existed ${destinationYearPath}`)
+//     }
+
+//     if (!fs.existsSync(destinationMonthPath)) {
+//       setTerminal('fc-orange', `Checking if folder month ${month} exists`)
+//       await fsExtra.ensureDir(destinationMonthPath)
+//       setTerminal('fc-green', `Folder ${destinationMonthPath} created`)
+//     } else {
+//       setTerminal('fc-yellow', `Folder existed ${destinationMonthPath}`)
+//     }
+
+//     if (!fs.existsSync(destinationDayPath)) {
+//       setTerminal('fc-orange', `Checking if folder day ${day} exists`)
+//       await fsExtra.ensureDir(destinationDayPath)
+//       setTerminal('fc-green', `Folder ${destinationDayPath} created`)
+//     } else {
+//       setTerminal('fc-yellow', `Folder existed ${destinationDayPath}`)
+//     }
+
+//     // Retry moving the file with a delay after 10 seconds
+//     const maxRetries = 3
+//     let retries = 0
+
+//     fsExtra.copy(filePath, destinationPath, async (err) => {
+//       if (err) {
+//         apiChecker = await checkApi(systemSettings.api_endpoint)
+//         if (apiChecker !== true) {
+//           stopFileWatcher()
+//           apiToVue()
+//           return
+//         }
+//         if (err.code === 'EBUSY' && retries < maxRetries) {
+//           console.log(`Retrying (${retries + 1}/${maxRetries})...`)
+//           retries++
+//           setTimeout(() => tryMoveFile(filePath), 10000)
+//         } else {
+//           console.error(`Error copying ${fileName}: ${err.message}`)
+//           // Handle the error or log additional information.
+//         }
+//       } else {
+//         console.log(`Copied ${fileName} to ${destinationPath}`)
+
+//         // Remove the original file
+//         fsExtra.remove(filePath, async (removeErr) => {
+//           if (removeErr) {
+//             apiChecker = await checkApi(systemSettings.api_endpoint)
+//             if (apiChecker !== true) {
+//               stopFileWatcher()
+//               apiToVue()
+//               return
+//             }
+//             console.error(`Error removing ${fileName}: ${removeErr.message}`)
+//           } else {
+//             console.log(`Removed original file: ${filePath}`)
+
+//             // Process the extracted information immediately
+//             const extractRenderDetailIDResult = extractRenderDetailID(fileName)
+//             console.log('Extracted Information:', destinationPath)
+//             console.log('Patient RenderDetailID:', extractRenderDetailIDResult)
+
+//             //API Checker
+//             apiChecker = await checkApi(systemSettings.api_endpoint)
+//             if (apiChecker !== true) {
+//               stopFileWatcher()
+//               apiToVue()
+//               return
+//             }
+//             // API Call
+//             const validateFileName = isValidFIleName(fileName)
+
+//             if (validateFileName) {
+//               const uploadedResult = await updatePath(
+//                 {
+//                   ID: extractRenderDetailIDResult,
+//                   DocumentPath: finalizeDocPath(destinationPath)
+//                 },
+//                 systemSettings.api_endpoint
+//               )
+
+//               setTerminal('fc-green', uploadedResult)
+//               toastToVue(uploadedResult)
+//             } else {
+//               setTerminal('fc-red', `Invalid file name. Skipping... ${fileName}`)
+//             }
+
+//             // Continue to the next file after a 30-second delay
+//             setTimeout(processNextFile, 30000)
+//           }
+//         })
+//       }
+//     })
+//   }
+
+//   function processNextFile() {
+//     const nextFile = watcherQueue.shift()
+
+//     if (nextFile) {
+//       tryMoveFile(nextFile)
+//     } else {
+//       isProcessing = false
+//     }
+//   }
+
+//   let isProcessing = false // Flag to track whether a file is being processed
+//   const watcherQueue = [] // Queue to store files while one is being processed
+
+//   watcher.on('add', (filePath) => {
+//     const fileExtension = path.extname(filePath).toLowerCase()
+//     if (fileExtension === '.pdf' && !isProcessing) {
+//       // Check if the file still exists
+//       if (fs.existsSync(filePath)) {
+//         isProcessing = true
+//         watcherQueue.push(filePath)
+//         tryMoveFile(watcherQueue.shift())
+//       } else {
+//         console.error(`File does not exist: ${filePath}`)
+//       }
+//     } else if (fileExtension === '.pdf') {
+//       if (fs.existsSync(filePath)) {
+//         watcherQueue.push(filePath)
+//       } else {
+//         console.error(`File does not exist: ${filePath}`)
+//       }
+//     }
+//   })
+
+//   watcher.on('unlink', (filePath) => {
+//     console.error(`File deleted before processing: ${filePath}`)
+//   })
+
+//   watcher.on('error', (error) => {
+//     console.error(`Error watching files: ${error}`)
+//   })
+// }
 
 function stopFileWatcher() {
   const formattedDateTime = moment().format('YYYY-MM-DD HH:mm:ss.SSS')
@@ -360,6 +513,25 @@ function stopFileWatcher() {
   } else {
     console.log('File watcher is not running')
   }
+}
+
+function restartFileWatcher() {
+  console.log('Restarting file watcher...')
+  stopFileWatcher()
+  setTimeout(() => {
+    startFileWatcher()
+  }, 5000) // Delay before restarting
+}
+
+function startMonitor() {
+  if (monitorInterval) return
+
+  monitorInterval = setInterval(() => {
+    if (!watcherRunning) {
+      console.warn('Watcher is not running. Restarting...')
+      restartFileWatcher()
+    }
+  }, 10000) // Monitor every 10 seconds
 }
 
 ipcMain.handle('startFileWatcher', () => {
