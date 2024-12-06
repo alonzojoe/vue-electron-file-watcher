@@ -195,7 +195,6 @@ function startFileWatcher() {
   async function tryMoveFile(filePath) {
     const fileName = basename(filePath)
     const fileDate = moment()
-
     const year = fileDate.format('YYYY')
     const month = fileDate.format('MM')
     const day = fileDate.format('DD')
@@ -213,7 +212,6 @@ function startFileWatcher() {
       return
     }
 
-    // Ensure destination directories exist
     await ensureDirectories([destinationYearPath, destinationMonthPath, destinationDayPath])
 
     // Retry logic for file copy
@@ -248,6 +246,7 @@ function startFileWatcher() {
       const validateFileName = isValidFIleName(fileName)
 
       if (validateFileName) {
+        console.log('file name valid')
         const uploadedResult = await updatePath(
           {
             ID: extractRenderDetailIDResult,
@@ -262,12 +261,10 @@ function startFileWatcher() {
         setTerminal('fc-red', `Invalid file name. Skipping... ${fileName}`)
       }
 
-      // Clear any existing timeout to avoid overlapping or multiple calls
       if (processNextFileTimeout) {
         clearTimeout(processNextFileTimeout)
       }
 
-      // Set a new timeout for the next file processing
       processNextFileTimeout = setTimeout(processNextFile, 30000)
     })
   }
@@ -510,21 +507,33 @@ function stopFileWatcher() {
       text: 'File Watcher Stopped.'
     })
     console.log('File Watcher stopped')
+    watcherRunning = false
   } else {
     console.log('File watcher is not running')
+  }
+
+  if (monitorInterval) {
+    clearInterval(monitorInterval)
+    monitorInterval = null
   }
 }
 
 function restartFileWatcher() {
   console.log('Restarting file watcher...')
   stopFileWatcher()
-  setTimeout(() => {
-    startFileWatcher()
-  }, 5000) // Delay before restarting
+
+  // Wait for a moment to ensure the watcher is completely stopped
+  if (!watcherRunning) {
+    setTimeout(() => {
+      startFileWatcher()
+    }, 5000) // Delay before restarting
+  } else {
+    console.error('Failed to stop file watcher. Cannot restart.')
+  }
 }
 
 function startMonitor() {
-  if (monitorInterval) return
+  if (monitorInterval) return // Avoid setting multiple intervals
 
   monitorInterval = setInterval(() => {
     if (!watcherRunning) {
